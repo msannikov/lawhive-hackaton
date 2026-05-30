@@ -1,55 +1,64 @@
 /**
  * Public entry point.
  *
- * The system's input is UNSTRUCTURED documents (tenancy agreement PDF, bank
- * statement PDF, scheme screenshots). `evaluateCase`:
+ * Input is UNSTRUCTURED documents. `evaluateCase`:
+ *   1. selects a playbook (domain),
+ *   2. uses a VLM provider (Claude / Gemini) to EXTRACT raw facts using the
+ *      playbook's schema,
+ *   3. normalises + validates them into the playbook's typed case, then
+ *   4. runs the playbook's deterministic rules engine to produce branch + tools.
  *
- *   1. uses a VLM provider (Claude / Gemini) to EXTRACT a structured TenantCase
- *      from those documents,
- *   2. validates + normalises the extraction, then
- *   3. applies the deterministic rules engine (`matchToolset`) to produce the
- *      branch + concrete toolset.
- *
- * Step 1 is the non-deterministic, AI part; step 3 is the auditable legal core.
+ * Steps 1–2 are the AI part; step 4 is the auditable legal core. Adding a new
+ * legal domain (e.g. employment termination) is purely a new playbook — this
+ * orchestrator does not change.
  */
 
 import "./loadEnv.ts";
-import { matchToolset } from "./toolset/orchestrator.ts";
-import { defaultProvider } from "./extraction/index.ts";
 import type {
   CaseInput,
-  DocumentAssessment,
+  DomainAssessment,
   ExtractionProvider,
-} from "./extraction/types.ts";
+  Playbook,
+} from "./core/types.ts";
+import { defaultProvider } from "./extraction/index.ts";
+import { getPlaybook } from "./playbooks/registry.ts";
 
 export interface EvaluateOptions {
   /** Override the VLM backend. Defaults to one chosen from the environment. */
   provider?: ExtractionProvider;
+  /** Override the playbook. Defaults to the one named by input.domain. */
+  playbook?: Playbook<any>;
 }
 
 export async function evaluateCase(
   input: CaseInput,
   options: EvaluateOptions = {},
-): Promise<DocumentAssessment> {
+): Promise<DomainAssessment> {
   if (!input.documents?.length) {
     throw new Error("evaluateCase: no documents supplied");
   }
 
+  const playbook = options.playbook ?? getPlaybook(input.domain);
   const provider = options.provider ?? defaultProvider();
 
-  // 1 + 2: VLM extraction → validated TenantCase.
-  const extraction = await provider.extract(input);
+  // 1 + 2: VLM extraction → raw facts (shaped by the playbook's schema).
+  const extraction = await provider.extract(input, playbook.extraction);
 
-  // 3: deterministic legal matching.
-  const assessment = matchToolset(extraction.tenantCase);
+  // 3: validate + normalise into the playbook's typed case.
+  const warnings = [...extraction.warnings];
+  const domainCase = playbook.normalize(extraction.raw, input, warnings);
+
+  // 4: deterministic legal matching.
+  const assessment = playbook.assess(domainCase);
 
   return {
     ...assessment,
-    extractedCase: extraction.tenantCase,
+    domain: playbook.id,
+    extractedCase: domainCase,
     extraction: {
       provider: extraction.provider,
       evidence: extraction.evidence,
-      warnings: extraction.warnings,
+      warnings,
     },
   };
 }

@@ -6,7 +6,7 @@
 
 import { readFile, readdir } from "node:fs/promises";
 import { basename, extname, join } from "node:path";
-import type { DocumentInput } from "./types.ts";
+import type { DocumentInput } from "../core/types.ts";
 
 const MEDIA: Record<string, DocumentInput["mediaType"]> = {
   ".pdf": "application/pdf",

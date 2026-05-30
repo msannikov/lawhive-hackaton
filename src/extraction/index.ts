@@ -1,24 +1,23 @@
 /**
- * Extraction layer barrel + default provider selection.
+ * Extraction layer barrel + default provider selection. Providers are
+ * domain-agnostic: they take an ExtractionSpec (from the active playbook) and
+ * return raw model output.
  */
 
-import type { ExtractionProvider } from "./types.ts";
+import type { ExtractionProvider } from "../core/types.ts";
 import { ClaudeProvider } from "./providers/claude.ts";
 import { GeminiProvider } from "./providers/gemini.ts";
 import { MockProvider } from "./providers/mock.ts";
 
-export * from "./types.ts";
 export { ClaudeProvider } from "./providers/claude.ts";
 export { GeminiProvider } from "./providers/gemini.ts";
 export { MockProvider } from "./providers/mock.ts";
-export { normalizeTenantCase, coerceDate } from "./validate.ts";
 export {
   loadDocuments,
   loadDocumentsFromDir,
   documentFromFile,
   documentFromBuffer,
 } from "./loadDocument.ts";
-export { tenantCaseJsonSchema, tenantCaseGeminiSchema } from "./schema.ts";
 
 /**
  * Picks a provider from the environment:

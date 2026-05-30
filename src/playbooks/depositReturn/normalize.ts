@@ -5,8 +5,8 @@
  * required facts so a bad extraction never produces a wrong deadline.
  */
 
-import type { TenantCase, LandlordResponse } from "../toolset/types.ts";
-import type { CaseInput } from "./types.ts";
+import type { TenantCase, LandlordResponse } from "./case.ts";
+import type { CaseInput } from "../../core/types.ts";
 
 const MONTHS: Record<string, number> = {
   january: 1, february: 2, march: 3, april: 4, may: 5, june: 6,
@@ -81,8 +81,9 @@ export function normalizeTenantCase(
   const ctx = input.context ?? {};
 
   let landlordResponse: LandlordResponse = "unknown";
-  if (ctx.landlordResponse) {
-    landlordResponse = ctx.landlordResponse;
+  const ctxResponse = ctx.landlordResponse as LandlordResponse | undefined;
+  if (ctxResponse && RESPONSES.includes(ctxResponse)) {
+    landlordResponse = ctxResponse;
   } else if (RESPONSES.includes(raw.landlordResponse)) {
     landlordResponse = raw.landlordResponse;
   } else if (raw.landlordResponse != null) {

@@ -10,9 +10,9 @@
  *                    └─ Landlord silent     → LANDLORD_SILENT
  */
 
-import type { CaseBranch, TenantCase } from "./types.ts";
+import type { CaseBranch, TenantCase } from "./case.ts";
 import { computeKeyDates } from "./keyDates.ts";
-import { formatUK } from "./dates.ts";
+import { formatUK } from "../../core/dates.ts";
 
 export interface Classification {
   branch: CaseBranch;

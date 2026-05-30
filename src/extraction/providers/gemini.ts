@@ -1,19 +1,16 @@
 /**
  * Gemini (VLM) extraction provider. Sends documents as inlineData and forces a
- * JSON response shaped by `tenantCaseGeminiSchema`.
+ * JSON response shaped by the active playbook's schema. Returns RAW model
+ * output; the playbook normalises it.
  */
 
 import type {
   CaseInput,
   ExtractionProvider,
-  ExtractionResult,
+  ExtractionSpec,
   FieldEvidence,
-} from "../types.ts";
-import { normalizeTenantCase } from "../validate.ts";
-import {
-  tenantCaseGeminiSchema,
-  EXTRACTION_INSTRUCTIONS,
-} from "../schema.ts";
+  RawExtraction,
+} from "../../core/types.ts";
 
 export interface GeminiProviderOptions {
   apiKey?: string;
@@ -33,20 +30,20 @@ export class GeminiProvider implements ExtractionProvider {
     this.model = opts.model ?? process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
   }
 
-  async extract(input: CaseInput): Promise<ExtractionResult> {
+  async extract(input: CaseInput, spec: ExtractionSpec): Promise<RawExtraction> {
     const { GoogleGenerativeAI } = await import("@google/generative-ai");
     const model = new GoogleGenerativeAI(this.apiKey).getGenerativeModel({
       model: this.model,
       generationConfig: {
         responseMimeType: "application/json",
-        responseSchema: tenantCaseGeminiSchema,
+        responseSchema: spec.geminiSchema,
       },
     });
 
     const parts: any[] = input.documents.map((d) => ({
       inlineData: { mimeType: d.mediaType, data: d.base64 },
     }));
-    parts.push({ text: EXTRACTION_INSTRUCTIONS });
+    parts.push({ text: spec.instructions });
 
     const result = await model.generateContent(parts);
     const text = result.response.text();
@@ -58,10 +55,7 @@ export class GeminiProvider implements ExtractionProvider {
       throw new Error("GeminiProvider: response was not valid JSON");
     }
 
-    const warnings: string[] = [];
-    const tenantCase = normalizeTenantCase(raw, input, warnings);
     const evidence: FieldEvidence[] = Array.isArray(raw.evidence) ? raw.evidence : [];
-
-    return { tenantCase, evidence, provider: this.name, warnings };
+    return { raw, evidence, provider: this.name, warnings: [] };
   }
 }

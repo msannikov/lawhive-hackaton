@@ -1,34 +1,43 @@
 /**
- * Public API of the deposit-return system.
+ * Public API.
  *
- * Input is unstructured documents; output is the matched toolset.
+ * Input is unstructured documents; output is a domain-specific toolset.
  *
- *   import { evaluateCase, loadDocuments } from "./src/index.ts";
+ *   import { evaluateCase, loadDocumentsFromDir } from "./src/index.ts";
  *
- *   const documents = await loadDocuments([
- *     "sample_data/tenancy_agreement.pdf",
- *     "sample_data/bank_statement_deposit_payment.pdf",
- *     "sample_data/dps_search_result.png",
- *     "sample_data/mydeposits_search_result.png",
- *     "sample_data/tds_search_result.png",
- *   ]);
+ *   const documents = await loadDocumentsFromDir("sample_data");
+ *   const assessment = await evaluateCase({ documents });        // default domain
+ *   // or: evaluateCase({ documents, domain: "employment_termination" })
  *
- *   const assessment = await evaluateCase({ documents });
  *   for (const tool of assessment.tools) {
  *     console.log(tool.nextAction, "by", tool.deadline);
  *   }
  */
 
-// Public entry point (async, VLM-backed).
+// Public entry point (async, VLM-backed, domain-agnostic).
 export { evaluateCase, type EvaluateOptions } from "./evaluateCase.ts";
 
-// Extraction layer (providers, loaders, schema).
-export * from "./extraction/index.ts";
+// Core types and the playbook seam.
+export * from "./core/types.ts";
+export * as dates from "./core/dates.ts";
 
-// Deterministic rules engine (the auditable core).
-export { matchToolset } from "./toolset/orchestrator.ts";
-export * from "./toolset/types.ts";
-export { classify, BRANCH_LABELS } from "./toolset/decisionTree.ts";
-export { computeKeyDates } from "./toolset/keyDates.ts";
-export { buildToolsForBranch } from "./toolset/toolsArsenal.ts";
-export * as dates from "./toolset/dates.ts";
+// Extraction layer (providers, loaders, default selection).
+export {
+  ClaudeProvider,
+  GeminiProvider,
+  MockProvider,
+  defaultProvider,
+  loadDocuments,
+  loadDocumentsFromDir,
+  documentFromFile,
+  documentFromBuffer,
+} from "./extraction/index.ts";
+
+// Playbook registry + the bundled domains.
+export {
+  PLAYBOOKS,
+  DEFAULT_DOMAIN,
+  getPlaybook,
+  depositReturnPlaybook,
+  employmentTerminationPlaybook,
+} from "./playbooks/registry.ts";

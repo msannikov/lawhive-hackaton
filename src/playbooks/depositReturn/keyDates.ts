@@ -3,7 +3,7 @@
  * Centralising this keeps deadline logic consistent across all branches.
  */
 
-import type { TenantCase } from "./types.ts";
+import type { TenantCase } from "./case.ts";
 import {
   parseISO,
   addCalendarDays,
@@ -11,7 +11,7 @@ import {
   addMonths,
   addYears,
   maxDate,
-} from "./dates.ts";
+} from "../../core/dates.ts";
 
 export interface KeyDates {
   /** "Today" used for all relative deadlines. */

@@ -13,7 +13,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { evaluateCase } from "../src/evaluateCase.ts";
 import { loadDocumentsFromDir } from "../src/extraction/index.ts";
-import { formatUK } from "../src/toolset/dates.ts";
+import { formatUK } from "../src/core/dates.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const data = join(here, "..", "sample_data");
@@ -24,14 +24,16 @@ console.log(`Loaded ${documents.length} document(s):`);
 for (const d of documents) console.log(`  - ${d.name} (${d.mediaType})`);
 console.log();
 
-// The user submits raw documents. Only non-document facts go in `context`.
+// The user submits raw documents. `domain` picks the playbook (default deposit).
+// Only non-document facts go in `context`.
 const assessment = await evaluateCase({
   documents,
+  domain: process.env.DOMAIN, // e.g. "employment_termination"; undefined → default
   context: { evaluationDate: "2026-05-30", landlordResponse: "unknown" },
 });
 
 console.log("=".repeat(72));
-console.log("DEPOSIT-RETURN ASSESSMENT —", assessment.extractedCase.tenant.name);
+console.log("ASSESSMENT —", assessment.domain);
 console.log("Extraction provider:", assessment.extraction.provider);
 console.log("=".repeat(72));
 

@@ -5,9 +5,10 @@
  * deadline date.
  */
 
-import type { CaseBranch, TenantCase, Tool } from "./types.ts";
+import type { Tool } from "../../core/types.ts";
+import type { CaseBranch, TenantCase } from "./case.ts";
 import type { KeyDates } from "./keyDates.ts";
-import { formatUK } from "./dates.ts";
+import { formatUK } from "../../core/dates.ts";
 
 type ToolBuilder = (c: TenantCase, k: KeyDates) => Tool[];
 
