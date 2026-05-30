@@ -7,8 +7,10 @@
     "example": "node --experimental-strip-types examples/fromDocuments.ts",
     "typecheck": "tsc --noEmit",
     "demo:capture": "node --experimental-strip-types Tools/scripts/captureAssessment.ts",
+    "demo:capture:claude": "node --experimental-strip-types Tools/scripts/captureAssessmentClaude.ts",
     "demo:studio": "npm run studio --prefix Tools",
-    "demo:render": "npm run render --prefix Tools"
+    "demo:render": "npm run render --prefix Tools",
+    "demo:render:claude": "npm run render:claude --prefix Tools"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
