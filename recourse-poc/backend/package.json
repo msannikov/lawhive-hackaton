@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.98.0",
+    "@google/generative-ai": "^0.24.1",
     "@hono/node-server": "^2.0.3",
     "@xmldom/xmldom": "^0.9.10",
     "date-fns": "^4.3.0",

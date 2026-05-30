@@ -28,7 +28,7 @@ export class ClaudeProvider implements ExtractionProvider {
     const key = opts.apiKey ?? process.env.ANTHROPIC_API_KEY;
     if (!key) throw new Error("ClaudeProvider: ANTHROPIC_API_KEY not set");
     this.apiKey = key;
-    this.model = opts.model ?? process.env.ANTHROPIC_MODEL ?? "claude-opus-4-7";
+    this.model = opts.model ?? process.env.ANTHROPIC_MODEL ?? "claude-opus-4-8";
   }
 
   async extract(input: CaseInput, spec: ExtractionSpec): Promise<RawExtraction> {
