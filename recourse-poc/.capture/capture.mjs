@@ -45,7 +45,7 @@ try {
     SAMPLE + "mydeposits_search_result.png",
     SAMPLE + "tds_search_result.png",
   ]);
-  await page.locator(".uploader-msg").filter({ hasText: "Read" }).waitFor({ timeout: 50000 });
+  await page.locator(".uploader-msg").filter({ hasText: "filled in" }).waitFor({ timeout: 60000 });
   await pause(700);
 } catch (e) {
   console.log("upload prefill skipped:", String(e).split("\n")[0]);
