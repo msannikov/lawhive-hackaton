@@ -79,10 +79,26 @@ export interface DemoNegotiationRound {
   courtFiling?: DemoCourtFiling;
 }
 
+export interface DemoChannelInbound {
+  channel: string;
+  from: string;
+  time: string;
+  text: string;
+}
+
+export interface DemoChannels {
+  supported: string[];
+  inbound: DemoChannelInbound;
+  reading: string[];
+  updatedStatus: string;
+  updatedLine: string;
+}
+
 export interface DemoAssessment {
   brand: DemoBrand;
   caseMeta: DemoCaseMeta;
   letterTemplate: string;
+  channels: DemoChannels;
   negotiationRounds: DemoNegotiationRound[];
   domain: string;
   branch: string;

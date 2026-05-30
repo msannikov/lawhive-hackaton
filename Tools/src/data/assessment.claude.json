@@ -7,13 +7,13 @@
   "caseMeta": {
     "tenantName": "Jamie Alexander Watson",
     "landlordName": "Mr Patrick James Sullivan",
-    "propertyAddress": "Flat 6, 14 Wellington Court, Edgbaston, Birmingham B16 9PJ",
+    "propertyAddress": "Flat 6, 14 Wellington Court, Edgbaston, Birmingham",
     "depositAmount": 980.77,
     "depositFormatted": "£980.77",
     "problem": "Deposit not found in DPS, mydeposits or TDS",
     "playbookLabel": "UK tenancy deposit return"
   },
-  "letterTemplate": "Dear Mr Patrick James Sullivan,\n\nRe: Return of tenancy deposit — Flat 6, 14 Wellington Court, Edgbaston, Birmingham B16 9PJ\n\nI'm writing about the £980.77 deposit I paid on 13 April 2024 for the above property.\n\nIt looks like the deposit may never have been protected in a government-authorised scheme, and that I was not given the prescribed information. I've checked the DPS, mydeposits and TDS registers and can find no record of it.\n\nI'd genuinely like to resolve this directly, without either of us going to court.\n\nTo help me understand where things stand:\n  • How am I supposed to confirm my deposit was protected when none of the three schemes hold a record of it?\n  • What can we do to put this right between us?\n\nTo settle this now, please return the full £980.77 to me by 20 June 2026.\n\nIf I don't hear from you, I'll have little choice but to refer the matter to the County Court, where a tenant may be awarded the deposit plus a penalty of one to three times its value under section 214 of the Housing Act 2004. I would much rather settle it directly with you.\n\nPlease reply by 20 June 2026 so we can sort this out.\n\nYours sincerely,\nJamie Alexander Watson",
+  "letterTemplate": "Dear Mr Patrick James Sullivan,\n\nRe: Return of tenancy deposit — Flat 6, 14 Wellington Court, Edgbaston, Birmingham\n\nI'm writing about the £980.77 deposit I paid on 13 April 2024 for the above property.\n\nIt looks like the deposit may never have been protected in a government-authorised scheme, and that I was not given the prescribed information. I've checked the DPS, mydeposits and TDS registers and can find no record of it.\n\nI'd genuinely like to resolve this directly, without either of us going to court.\n\nTo help me understand where things stand:\n  • How am I supposed to confirm my deposit was protected when none of the three schemes hold a record of it?\n  • What can we do to put this right between us?\n\nTo settle this now, please return the full £980.77 to me by 20 June 2026.\n\nIf I don't hear from you, I'll have little choice but to refer the matter to the County Court, where a tenant may be awarded the deposit plus a penalty of one to three times its value under section 214 of the Housing Act 2004. I would much rather settle it directly with you.\n\nPlease reply by 20 June 2026 so we can sort this out.\n\nYours sincerely,\nJamie Alexander Watson",
   "channels": {
     "supported": [
       "WhatsApp",
@@ -165,7 +165,7 @@
       "deadline": "2026-06-06T00:00:00.000Z",
       "deadlineBasis": "Send within 7 days of evaluation to keep momentum.",
       "nextAction": "Send the landlord (patrick.sullivan58@hotmail.com) a Letter Before Action demanding return of the £980.77 deposit and stating your intention to claim the statutory penalty of £980.77–£2942.31 (1–3× the deposit) under s214 Housing Act 2004. Give 14 days to respond (by 20 June 2026).",
-      "documentTemplate": "Dear Mr Patrick James Sullivan,\n\nRe: Return of tenancy deposit — Flat 6, 14 Wellington Court, Edgbaston, Birmingham B16 9PJ\n\nI'm writing about the £980.77 deposit I paid on 13 April 2024 for the above property.\n\nIt looks like the deposit may never have been protected in a government-authorised scheme, and that I was not given the prescribed information. I've checked the DPS, mydeposits and TDS registers and can find no record of it.\n\nI'd genuinely like to resolve this directly, without either of us going to court.\n\nTo help me understand where things stand:\n  • How am I supposed to confirm my deposit was protected when none of the three schemes hold a record of it?\n  • What can we do to put this right between us?\n\nTo settle this now, please return the full £980.77 to me by 20 June 2026.\n\nIf I don't hear from you, I'll have little choice but to refer the matter to the County Court, where a tenant may be awarded the deposit plus a penalty of one to three times its value under section 214 of the Housing Act 2004. I would much rather settle it directly with you.\n\nPlease reply by 20 June 2026 so we can sort this out.\n\nYours sincerely,\nJamie Alexander Watson"
+      "documentTemplate": "Dear Mr Patrick James Sullivan,\n\nRe: Return of tenancy deposit — Flat 6, 14 Wellington Court, Edgbaston, Birmingham\n\nI'm writing about the £980.77 deposit I paid on 13 April 2024 for the above property.\n\nIt looks like the deposit may never have been protected in a government-authorised scheme, and that I was not given the prescribed information. I've checked the DPS, mydeposits and TDS registers and can find no record of it.\n\nI'd genuinely like to resolve this directly, without either of us going to court.\n\nTo help me understand where things stand:\n  • How am I supposed to confirm my deposit was protected when none of the three schemes hold a record of it?\n  • What can we do to put this right between us?\n\nTo settle this now, please return the full £980.77 to me by 20 June 2026.\n\nIf I don't hear from you, I'll have little choice but to refer the matter to the County Court, where a tenant may be awarded the deposit plus a penalty of one to three times its value under section 214 of the Housing Act 2004. I would much rather settle it directly with you.\n\nPlease reply by 20 June 2026 so we can sort this out.\n\nYours sincerely,\nJamie Alexander Watson"
     },
     {
       "id": "county-court-claim-s214",
@@ -179,38 +179,102 @@
     }
   ],
   "extraction": {
-    "provider": "mock",
+    "provider": "claude",
     "evidence": [
       {
         "field": "deposit.amount",
+        "source": "Tenancy Agreement Schedule 1 and Particulars item 7: £980.77",
         "value": 980.77,
-        "source": "tenancy_agreement.pdf, Particulars item 7"
+        "confidence": 1
       },
       {
         "field": "deposit.paidDate",
+        "source": "Bank statement 13 Apr 2024 FPO P SULLIVAN. DEPOSIT FLAT 6 14 WELLINGTON CT £980.77",
         "value": "2024-04-13",
-        "source": "bank_statement_deposit_payment.pdf, 13 Apr FPO P SULLIVAN"
+        "confidence": 1
+      },
+      {
+        "field": "tenancy.startDate",
+        "source": "Tenancy Agreement Particulars item 5: fixed term from 17 April 2024",
+        "value": "2024-04-17",
+        "confidence": 1
+      },
+      {
+        "field": "tenancy.endDate",
+        "source": "Tenancy Agreement Particulars item 5: to and including 16 April 2025",
+        "value": "2025-04-16",
+        "confidence": 1
+      },
+      {
+        "field": "landlord.name",
+        "source": "Tenancy Agreement Parties (1): Mr Patrick James Sullivan",
+        "value": "Mr Patrick James Sullivan",
+        "confidence": 1
+      },
+      {
+        "field": "landlord.address",
+        "source": "Tenancy Agreement Parties (1): 28 Holyhead Road, Handsworth, Birmingham B21 0LJ",
+        "value": "28 Holyhead Road, Handsworth, Birmingham B21 0LJ",
+        "confidence": 1
+      },
+      {
+        "field": "landlord.email",
+        "source": "Tenancy Agreement Particulars item 2",
+        "value": "patrick.sullivan58@hotmail.com",
+        "confidence": 1
+      },
+      {
+        "field": "landlord.phone",
+        "source": "Tenancy Agreement Particulars item 2",
+        "value": "07811 442 309",
+        "confidence": 1
+      },
+      {
+        "field": "tenant.name",
+        "source": "Tenancy Agreement Parties (2): Jamie Alexander Watson",
+        "value": "Jamie Alexander Watson",
+        "confidence": 1
+      },
+      {
+        "field": "property.address",
+        "source": "Tenancy Agreement Property: Flat 6, 14 Wellington Court, Edgbaston, Birmingham B16 9PJ",
+        "value": "Flat 6, 14 Wellington Court, Edgbaston, Birmingham B16 9PJ",
+        "confidence": 1
+      },
+      {
+        "field": "protection.protectedInScheme",
+        "source": "All three scheme searches (DPS, mydeposits, TDS) returned no matching record",
+        "value": false,
+        "confidence": 1
       },
       {
         "field": "protection.prescribedInformationGiven",
+        "source": "Schedule 1 items (c) Authorised Scheme and (h) dispute-resolution service left blank/to be confirmed; landlord signature blank; note confirms no subsequent communication",
         "value": false,
-        "source": "tenancy_agreement.pdf, Schedule 1 (c)+(h) blank"
+        "confidence": 1
       },
       {
-        "field": "protection.schemeSearches",
-        "value": "no record found x3",
-        "source": "dps/mydeposits/tds_search_result.png"
+        "field": "schemeSearches.DPS",
+        "source": "DPS Check your deposit screenshot: 'No deposit record found'",
+        "value": false,
+        "confidence": 1
+      },
+      {
+        "field": "schemeSearches.mydeposits",
+        "source": "mydeposits Find my deposit screenshot: 'No matching record found'",
+        "value": false,
+        "confidence": 1
+      },
+      {
+        "field": "schemeSearches.TDS",
+        "source": "TDS Is my deposit protected screenshot: 'No deposit found in our records'",
+        "value": false,
+        "confidence": 1
       }
     ],
-    "warnings": [
-      "MockProvider: returning deposit fixture, documents were not read."
-    ]
+    "warnings": []
   },
   "documents": [
-    {
-      "name": "tenancy_agreement.pdf",
-      "kind": "pdf"
-    },
     {
       "name": "bank_statement_deposit_payment.pdf",
       "kind": "pdf"
@@ -226,6 +290,10 @@
     {
       "name": "tds_search_result.png",
       "kind": "image"
+    },
+    {
+      "name": "tenancy_agreement.pdf",
+      "kind": "pdf"
     }
   ],
   "workflowSteps": [
