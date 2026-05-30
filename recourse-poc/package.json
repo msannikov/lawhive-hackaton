@@ -1,0 +1,13 @@
+{
+  "name": "recourse-poc",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Recourse — tenancy-deposit-return POC (TypeScript: Hono backend + React/Vite frontend)",
+  "scripts": {
+    "setup": "npm install --prefix backend && npm install --prefix frontend",
+    "fetch:grounding": "npm run fetch:grounding --prefix backend",
+    "test": "npm test --prefix backend",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm run dev --prefix frontend"
+  }
+}
