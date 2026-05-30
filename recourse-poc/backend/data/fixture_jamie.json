@@ -1,0 +1,43 @@
+{
+  "selected_claim_ids": ["R1", "R2", "R4", "R6", "R7"],
+  "letter_sections": {
+    "intro": "I am writing about the deposit you took for my tenancy. This letter is a formal Letter Before Claim. I would prefer to resolve this matter without court proceedings, and I am giving you the opportunity to do so before any claim is issued.",
+    "facts": "You took a deposit from me at the start of my assured shorthold tenancy. To date, that deposit has not been protected in a government-authorised tenancy deposit scheme, and I was not given the prescribed information that the law requires.",
+    "breach": "By failing to protect the deposit in an authorised scheme, and by failing to give me the prescribed information within the time the law allows, you have not complied with your statutory obligations under the Housing Act 2004.",
+    "claim": "I therefore require the return of my deposit and payment of the statutory penalty that the court may award. The amounts claimed and the dates by which I expect a response are set out below.",
+    "adr": "I am willing to consider alternative dispute resolution, such as discussion or mediation, to resolve this matter without the need for court proceedings, as encouraged by the Pre-Action Protocol for Conduct.",
+    "next_steps": "Please respond by the date set out below. If I do not hear from you, I may issue a claim in the county court under CPR Part 8 (claim form N208) without further notice to you. This letter is sent on a without-prejudice-save-as-to-costs basis."
+  },
+  "claims": [
+    {
+      "claim_id": "R1",
+      "rendered_sentence": "The law requires a landlord to protect a tenancy deposit in an authorised scheme within 30 days of receiving it.",
+      "source_id": "ha2004-s213-3",
+      "verbatim_quote": "the initial requirements of an authorised scheme must be complied with by the landlord in relation to the deposit within the period of 30 days beginning with the date on which it is received"
+    },
+    {
+      "claim_id": "R2",
+      "rendered_sentence": "The landlord must also give the tenant the prescribed information about the scheme within 30 days.",
+      "source_id": "ha2004-s213-6",
+      "verbatim_quote": "within the period of 30 days beginning with the date on which the deposit is received by the landlord"
+    },
+    {
+      "claim_id": "R4",
+      "rendered_sentence": "Where section 213(3) or (6) has not been complied with, the tenant may apply to the county court.",
+      "source_id": "ha2004-s214-1a",
+      "verbatim_quote": "that section 213(3) or (6) has not been complied with in relation to the deposit"
+    },
+    {
+      "claim_id": "R6",
+      "rendered_sentence": "On such an application the court may order the deposit to be repaid to the applicant within 14 days.",
+      "source_id": "ha2004-s214-3A",
+      "verbatim_quote": "to repay all or part of it to the applicant within the period of 14 days beginning with the date of the making of the order"
+    },
+    {
+      "claim_id": "R7",
+      "rendered_sentence": "The court must also order the landlord to pay a penalty of between one and three times the deposit within 14 days.",
+      "source_id": "ha2004-s214-4",
+      "verbatim_quote": "not less than the amount of the deposit and not more than three times the amount of the deposit within the period of 14 days"
+    }
+  ]
+}
