@@ -9,14 +9,14 @@
  *   Demo:        GET  /api/cases, POST /api/generate        (preset DepositCases)
  *
  * The team Playbook engine (src/) owns branch + tools + dates + negotiation.
- * Recourse's grounded pipeline owns the verified deposit letter. The API never
+ * Law Gun's grounded pipeline owns the verified deposit letter. The API never
  * returns an unverified letter — a persistent validation failure becomes a 422.
  */
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 
-// Recourse (deposit letter service) ------------------------------------------
+// Law Gun (deposit letter service) -------------------------------------------
 import { GenerateRequestSchema } from "./models";
 import { getCase, listCases } from "./cases";
 import { runLetterPipeline } from "./letterPipeline";
@@ -89,7 +89,7 @@ app.post("/api/playbooks/:domain/extract", async (ctx) => {
   }
 });
 
-// ── Deposit grounded letter (Recourse pipeline) ──────────────────────────────
+// ── Deposit grounded letter (Law Gun pipeline) ───────────────────────────────
 app.post("/api/playbooks/deposit_return/letter", async (ctx) => {
   const body = await ctx.req.json().catch(() => ({}));
   const { facts, context, overrides } = body ?? {};

@@ -1,4 +1,4 @@
-# Recourse — Deposit Return POC
+# Law Gun — Deposit Return POC
 
 A minimal, end-to-end vertical slice that drafts a CPR-compliant **Letter Before Claim** for a tenant whose landlord mishandled their deposit (Housing Act 2004, ss 213–214).
 

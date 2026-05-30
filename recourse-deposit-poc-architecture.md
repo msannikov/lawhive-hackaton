@@ -1,4 +1,4 @@
-# Recourse — Deposit Return POC Architecture (as built)
+# Law Gun — Deposit Return POC Architecture (as built)
 
 > **Status: implemented.** This document describes the POC as actually built under `recourse-poc/`, including the decisions and deviations from the original design. Run instructions live in `recourse-poc/README.md`.
 

@@ -55,7 +55,7 @@ export function buildCalendar(events: IcsEvent[]): string {
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Recourse//Legal Negotiator//EN",
+    "PRODID:-//Law Gun//Legal Negotiator//EN",
     "CALSCALE:GREGORIAN",
     ...events.map(buildVEvent),
     "END:VCALENDAR",

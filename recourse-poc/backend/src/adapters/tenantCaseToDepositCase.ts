@@ -1,6 +1,6 @@
 /**
  * Inbound adapter: the team engine's `TenantCase` (the funnel's normalised facts)
- * → Recourse's zod `DepositCase` (what the grounded-letter pipeline consumes).
+ * → Law Gun's zod `DepositCase` (what the grounded-letter pipeline consumes).
  *
  * The two models are ~80% aligned. This bridges the gaps:
  *   - tri-state: TenantCase.protection.* are plain booleans, but DepositCase uses

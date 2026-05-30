@@ -181,7 +181,7 @@ export default function App() {
     <div className="app">
       <header className="masthead">
         <div>
-          <h1>Recourse</h1>
+          <h1>Law Gun</h1>
           <p className="tagline">Your next move, the date it's due, and what to do when the landlord replies.</p>
         </div>
       </header>

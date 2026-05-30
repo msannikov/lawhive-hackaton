@@ -57,7 +57,7 @@ function loadFixture(): EmitLetter {
 }
 
 // ── Static, cacheable prompt material ────────────────────────────────────────
-const SYSTEM_PROMPT = `You are a calm, plain-English assistant for "Recourse", helping a tenant in England & Wales recover a mishandled tenancy deposit by drafting a Letter Before Claim at the user's instruction.
+const SYSTEM_PROMPT = `You are a calm, plain-English assistant for "Law Gun", helping a tenant in England & Wales recover a mishandled tenancy deposit by drafting a Letter Before Claim at the user's instruction.
 
 Non-negotiable rules:
 - You provide legal INFORMATION and drafting, never advice on the merits.

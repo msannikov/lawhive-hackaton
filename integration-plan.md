@@ -4,7 +4,7 @@ Merges the two parallel builds into a single frontend + backend product:
 
 - **Team engine** (`src/` — the `Playbook` framework): document-driven, multi-vertical,
   deterministic `assess()` producing a branch + toolset + key dates + negotiation signal.
-- **Recourse** (`recourse-poc/` — grounded-letter POC): cached legislation, quote-then-cite
+- **Law Gun** (`recourse-poc/` — grounded-letter POC): cached legislation, quote-then-cite
   validator, Claude letter generation, and the clickable **provenance drawer** UI.
 
 ## 1. Product flow (what we're building)
@@ -32,7 +32,7 @@ return** is live. Everything else renders as visibly disabled "Coming soon" — 
 
 ## 2. Target architecture
 
-One server, one web app, the team engine as a library, Recourse as the deposit "verified-letter"
+One server, one web app, the team engine as a library, Law Gun as the deposit "verified-letter"
 service.
 
 ```
@@ -44,8 +44,8 @@ server/ (Hono — evolve recourse-poc/backend)
    GET  /api/playbooks/:domain/intake-schema       → which questions to ask
    POST /api/assess            {domain, facts}      → assess() from Q&A  (no VLM)
    POST /api/assess/documents  {domain, documents}  → team VLM extract → assess() (optional)
-   POST /api/playbooks/deposit_return/letter {facts}→ Recourse grounded letter + provenance
-   POST /api/handoff                                → Recourse solicitor handoff package
+   POST /api/playbooks/deposit_return/letter {facts}→ Law Gun grounded letter + provenance
+   POST /api/handoff                                → Law Gun solicitor handoff package
       │  in-process imports (no network hop)
    ┌─────────────────────────────┬───────────────────────────────────────┐
    ▼                             ▼                                         
@@ -59,7 +59,7 @@ ENGINE = src/                 GROUNDING = recourse-poc/backend/src
 ```
 
 **Decision: the team's `Playbook` framework is the source of truth** for branch / tools / dates /
-negotiation (it scales to multiple verticals, which the funnel needs). **Recourse becomes the
+negotiation (it scales to multiple verticals, which the funnel needs). **Law Gun becomes the
 deposit vertical's premium letter generator + provenance UI**, called by the deposit "letter" tool.
 
 ## 3. The funnel taxonomy (served by `GET /api/taxonomy`)
@@ -145,11 +145,11 @@ The detail panel is keyed by `tool.category`:
   feeds back into the facts. *(your "where to check for scheme existence/non-existence")*
 - **`letter` / `chase`** → letter composer showing `tool.documentTemplate` (the calibrated
   Never-Split-the-Difference letter). For the deposit LBA, call
-  `POST /api/playbooks/deposit_return/letter` to get **Recourse's grounded version** with a
+  `POST /api/playbooks/deposit_return/letter` to get **Law Gun's grounded version** with a
   `provenance_map`, rendered with the **ProvenanceDrawer** (every legal sentence clickable →
   verified against legislation.gov.uk). "Send by {deadline}" + copy / download + ICS.
-- **`evidence`** → the evidence checklist (Recourse handoff checklist + the tool's `nextAction`).
-- **`adr` / `court`** → guidance + the escalate CTA → Recourse `buildHandoff` "handed to a
+- **`evidence`** → the evidence checklist (Law Gun handoff checklist + the tool's `nextAction`).
+- **`adr` / `court`** → guidance + the escalate CTA → Law Gun `buildHandoff` "handed to a
   regulated solicitor" screen.
 - Every panel shows the concrete **deadline date** prominently + "add to calendar".
 
@@ -158,12 +158,12 @@ The detail panel is keyed by `tool.category`:
 1. **`assessFromFacts(domain, facts)`** in the engine — skips VLM: validates `facts` into the
    playbook's case and calls `assess()`. Lets the Q&A path reuse the playbook unchanged.
 2. **`tenantCaseToDepositCase(tc, parties)`** adapter — `TenantCase` (team) → `DepositCase`
-   (Recourse). The two are ~80% aligned; the adapter fills `country`/`tenancy_type` (default
+   (Law Gun). The two are ~80% aligned; the adapter fills `country`/`tenancy_type` (default
    England/AST, confirmed at intake), party fields, and maps booleans → `yes|no|unknown`. Used only
    by the grounded-letter endpoint.
 3. **Escalation reconciliation** — surface the team's richer `EscalationSignal`
    (`self_serve|monitor|escalate`) in the UI; when `level === "escalate"`, build the handoff with
-   Recourse's `buildHandoff`. Out-of-scope is caught at intake (scope questions), not post-assess.
+   Law Gun's `buildHandoff`. Out-of-scope is caught at intake (scope questions), not post-assess.
 
 ## 8. Repo layout
 
@@ -176,7 +176,7 @@ Recommended (fastest, reuses the only working web tier):
   `ToolDetail`; reuse `Letter`, `ProvenanceDrawer`, `DeadlineCard`, `HandoffScreen`.
 
 Known wiring task: the engine uses Node native TS (`--experimental-strip-types`, explicit `.ts`
-imports); Recourse uses `tsx`. Run the unified server under one runner (tsx) and set
+imports); Law Gun uses `tsx`. Run the unified server under one runner (tsx) and set
 `allowImportingTsExtensions` so cross-tree `.ts` imports resolve. (M0 spike below.)
 
 Cleaner alternative (if time allows): a `app/{server,web}` workspace that imports both — more setup,
@@ -212,9 +212,9 @@ better separation. Not recommended for the hackathon timebox.
 
 ## 11. Open decisions (confirm to start)
 
-1. **Engine source of truth** — team `Playbook` framework *(recommended)* vs Recourse.
+1. **Engine source of truth** — team `Playbook` framework *(recommended)* vs Law Gun.
 2. **Intake** — guided Q&A primary + optional upload *(recommended)* vs Q&A-only vs upload-first.
-3. **Letter** — Recourse grounded + provenance for deposit *(recommended)* vs team's static template.
+3. **Letter** — Law Gun grounded + provenance for deposit *(recommended)* vs team's static template.
 4. **Repo layout** — evolve `recourse-poc/` in place *(recommended)* vs new `app/` workspace.
 5. **Breadth** — ~9 problem areas / ~6 tenancy sub-areas shown as the "lots of options" illusion.
 
@@ -224,7 +224,7 @@ better separation. Not recommended for the hackathon timebox.
 - **Two escalation vocabularies** — resolved by adopting the team's `EscalationSignal` in the UI.
 - **Scope honesty** — "coming soon" areas must be clearly non-functional; never imply legal
   capability we don't have. Out-of-scope deposit facts → refuse/handoff, not a bad letter.
-- **Model drift** — engine pins `claude-opus-4-7`, Recourse `claude-opus-4-8`; standardise on 4.8.
+- **Model drift** — engine pins `claude-opus-4-7`, Law Gun `claude-opus-4-8`; standardise on 4.8.
 - **Grounded-letter latency** — keep the fixture-first path for the demo so it runs offline.
 </content>
 </invoke>
