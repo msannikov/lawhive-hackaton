@@ -8,6 +8,8 @@
     "studio": "remotion studio src/index.ts",
     "render": "remotion render src/index.ts WorkflowDemo out/workflow-demo.mp4",
     "render:claude": "remotion render src/index.ts WorkflowDemoClaude out/workflow-demo-claude.mp4",
+    "render:recourse": "remotion render src/index.ts RecourseDemo out/recourse-demo.mp4",
+    "render:lawgun": "remotion render src/index.ts LawGunDemo out/law-gun-demo.mp4",
     "still": "remotion still src/index.ts WorkflowDemo out/workflow-demo.png --frame=450"
   },
   "dependencies": {
