@@ -32,7 +32,8 @@ import { getChunk } from "./grounding";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURE_PATH = resolve(__dirname, "..", "data", "fixture_jamie.json");
 
-const MODEL_ID = process.env.MODEL_ID || "claude-opus-4-8";
+// const MODEL_ID = process.env.MODEL_ID || "claude-opus-4-8";
+const MODEL_ID = process.env.MODEL_ID || "claude-haiku-4-5";
 
 export interface EngineOutputs {
   eligibility: EligibilityResult;

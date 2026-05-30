@@ -9,9 +9,10 @@ interface Props {
   facts: Facts;
   onClaimClick: (c: GroundedClaim) => void;
   activeClaimId: string | null;
+  onSent?: () => void;
 }
 
-export default function LetterPanel({ facts, onClaimClick, activeClaimId }: Props) {
+export default function LetterPanel({ facts, onClaimClick, activeClaimId, onSent }: Props) {
   const [resp, setResp] = useState<GenerateResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,6 +40,11 @@ export default function LetterPanel({ facts, onClaimClick, activeClaimId }: Prop
         <Letter letter={resp.letter} meta={resp.meta} onClaimClick={onClaimClick} activeClaimId={activeClaimId} />
         <aside className="letter-side">
           <DeadlineCard deadline={resp.letter.deadline} quantum={resp.engines.quantum} />
+          {onSent && (
+            <button type="button" className="primary-btn full" onClick={onSent}>
+              I've sent this letter →
+            </button>
+          )}
         </aside>
       </div>
     );

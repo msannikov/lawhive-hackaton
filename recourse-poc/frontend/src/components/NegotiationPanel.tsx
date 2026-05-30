@@ -1,0 +1,135 @@
+import { useState } from "react";
+import type { LandlordResponse, LogEvent, NegStage } from "../types";
+import { formatDate } from "../lib/date";
+import ResponseLogger from "./ResponseLogger";
+
+export interface NegotiationApi {
+  stage: NegStage;
+  events: LogEvent[];
+  awaiting: { since: string; dueBy: string } | null;
+  resolved: { at: string; note?: string } | null;
+  domain: string;
+  onSent: () => void;
+  onResponse: (category: LandlordResponse, note?: string) => void;
+  onNoResponse: () => void;
+  onAdrUnresolved: () => void;
+  onResolve: (note?: string) => void;
+}
+
+const STAGE_LABEL: Record<NegStage, string> = {
+  initial: "Getting started",
+  post_letter: "After your letter",
+  post_adr: "After ADR",
+};
+
+export default function NegotiationPanel({ neg }: { neg: NegotiationApi }) {
+  const [logging, setLogging] = useState(false);
+
+  if (neg.resolved) {
+    return (
+      <div className="neg-panel">
+        <div className="neg-status tone-ok">
+          <strong>✓ Resolved</strong>
+          <span>You marked the deposit as recovered on {formatDate(neg.resolved.at)}.</span>
+        </div>
+        {neg.resolved.note && <p className="note">{neg.resolved.note}</p>}
+        <History events={neg.events} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="neg-panel">
+      <div className="neg-head">
+        <h3>Your negotiation</h3>
+        <span className={"neg-stage stage-" + neg.stage}>{STAGE_LABEL[neg.stage]}</span>
+      </div>
+      <p className="neg-status-line">{describe(neg)}</p>
+
+      {neg.awaiting && (
+        <div className="awaiting-prompt">
+          <strong>Has the landlord replied?</strong>
+          <div className="awaiting-actions">
+            <button type="button" className="primary-btn" onClick={() => setLogging(true)}>
+              Log their reply
+            </button>
+            <button type="button" className="ghost-btn" onClick={neg.onNoResponse}>
+              No — nothing by {formatDate(neg.awaiting.dueBy)}
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="neg-actions">
+        {neg.stage === "initial" && !neg.awaiting && (
+          <button type="button" className="ghost-btn" onClick={neg.onSent}>
+            I've sent my letter / demand
+          </button>
+        )}
+        {!neg.awaiting && (
+          <button type="button" className="ghost-btn" onClick={() => setLogging(true)}>
+            Log the landlord's reply
+          </button>
+        )}
+        <button type="button" className="ghost-btn" onClick={neg.onNoResponse}>
+          Landlord went silent
+        </button>
+        <button type="button" className="ghost-btn" onClick={neg.onAdrUnresolved}>
+          ADR didn't resolve it
+        </button>
+        <button type="button" className="ghost-btn good" onClick={() => neg.onResolve()}>
+          Deposit returned ✓
+        </button>
+      </div>
+
+      {logging && (
+        <ResponseLogger
+          domain={neg.domain}
+          onSubmit={(cat, note) => {
+            neg.onResponse(cat, note);
+            setLogging(false);
+          }}
+          onCancel={() => setLogging(false)}
+        />
+      )}
+
+      <History events={neg.events} />
+    </div>
+  );
+}
+
+function describe(neg: NegotiationApi): string {
+  if (neg.awaiting) {
+    return `You sent your letter on ${formatDate(neg.awaiting.since)}. Give the landlord until ${formatDate(
+      neg.awaiting.dueBy,
+    )} to respond, then log what happened.`;
+  }
+  switch (neg.stage) {
+    case "initial":
+      return "Send the recommended letter, then come back and log what the landlord does — the plan updates around their response.";
+    case "post_letter":
+      return "Your letter step is done. The plan below reflects the landlord's response.";
+    case "post_adr":
+      return "ADR is exhausted — the plan below reflects the next step.";
+  }
+}
+
+function History({ events }: { events: LogEvent[] }) {
+  if (!events.length) return null;
+  return (
+    <div className="neg-history">
+      <h4>Case history</h4>
+      <ol>
+        {events.map((e) => (
+          <li key={e.id} className={"hist-" + (e.tone ?? "neutral")}>
+            <span className="hist-date">{formatDate(e.at)}</span>
+            <span className="hist-body">
+              <span className="hist-title">{e.title}</span>
+              {e.detail && <span className="hist-detail">{e.detail}</span>}
+            </span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
