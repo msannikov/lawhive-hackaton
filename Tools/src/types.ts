@@ -57,13 +57,26 @@ export interface DemoBrand {
   subtitle: string;
 }
 
+export interface DemoCourtFiling {
+  deposit: string;
+  penaltyLow: string;
+  penaltyHigh: string;
+  lbaResponseDeadline: string;
+  limitationLongstop: string;
+  legalBasis: string;
+  checklist: string[];
+  nextAction: string;
+}
+
 export interface DemoNegotiationRound {
   label: string;
   stage: string;
   branchLabel: string;
-  escalation: DemoEscalation;
-  nextMove?: DemoNextMove;
   userReport?: string;
+  kind: "assessment" | "court_filing";
+  escalation?: DemoEscalation;
+  nextMove?: DemoNextMove;
+  courtFiling?: DemoCourtFiling;
 }
 
 export interface DemoAssessment {

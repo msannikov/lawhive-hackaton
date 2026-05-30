@@ -38,11 +38,20 @@ const assessment = await evaluateCase(baseInput, { provider, playbook });
 
 const tenantCase = assessment.extractedCase as TenantCase;
 const depositFormatted = `£${tenantCase.deposit.amount.toFixed(2)}`;
+const penaltyLow = depositFormatted;
+const penaltyHigh = `£${(tenantCase.deposit.amount * 3).toFixed(2)}`;
 
 const letterTool = assessment.tools.find((t) => t.id === "letter-before-action");
+const courtTool = assessment.tools.find((t) => t.id === "county-court-claim-s214");
 
-function serialiseRound(label: string, stage: string, userReport: string, a: CaseAssessment) {
+function serialiseAssessmentRound(
+  label: string,
+  stage: string,
+  userReport: string,
+  a: CaseAssessment,
+) {
   return {
+    kind: "assessment" as const,
     label,
     stage,
     userReport,
@@ -54,22 +63,57 @@ function serialiseRound(label: string, stage: string, userReport: string, a: Cas
   };
 }
 
+const round2Assessment = await evaluateCase(
+  { ...baseInput, context: { ...baseInput.context, stage: "post_letter" } },
+  { provider, playbook },
+);
+
 const negotiationRounds = [
-  serialiseRound(
+  serialiseAssessmentRound(
     "Round 1 — before any contact",
     "initial",
     "Jamie uploads documents. No letter sent yet.",
     assessment,
   ),
-  serialiseRound(
-    "Round 2 — landlord went silent",
-    "post_letter",
-    'Jamie reports: "I sent the Letter Before Action — no reply."',
-    await evaluateCase(
-      { ...baseInput, context: { ...baseInput.context, stage: "post_letter" } },
-      { provider, playbook },
+  {
+    ...serialiseAssessmentRound(
+      "Round 2 — landlord went silent",
+      "post_letter",
+      'Jamie reports: "I sent the Letter Before Action — no reply."',
+      round2Assessment,
     ),
-  ),
+    // After silence, the gate flips — next step is lawyer handoff, not filing yet.
+    nextMove: {
+      toolId: "lawyer-handoff",
+      title: "Consult a lawyer before filing",
+      rationale:
+        "The penalty multiplier is discretionary — a lawyer should issue the s214 claim, not self-serve court filing.",
+      deadline: round2Assessment.nextMove?.deadline.toISOString() ?? new Date().toISOString(),
+    },
+  },
+  {
+    kind: "court_filing" as const,
+    label: "Round 3 — filing the s214 claim",
+    stage: "post_adr",
+    branchLabel: round2Assessment.branchLabel,
+    userReport: 'Jamie reports: "Lawyer reviewed the bundle — filing the County Court claim."',
+    courtFiling: {
+      deposit: depositFormatted,
+      penaltyLow,
+      penaltyHigh,
+      lbaResponseDeadline: assessment.keyDates["Contractual return deadline"] ?? "20 June 2026",
+      limitationLongstop: assessment.keyDates["s214 claim longstop (6 yrs)"] ?? "13 May 2030",
+      legalBasis: courtTool?.legalBasis ?? "Housing Act 2004 s214",
+      checklist: [
+        "Signed tenancy agreement",
+        "Bank statement showing deposit payment",
+        "Blank prescribed-information fields (Schedule 1)",
+        "DPS / mydeposits / TDS negative search screenshots",
+        "Letter Before Action + proof of sending",
+      ],
+      nextAction: courtTool?.nextAction ?? "",
+    },
+  },
 ];
 
 const serialisable = {

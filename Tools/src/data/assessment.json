@@ -16,6 +16,7 @@
   "letterTemplate": "Dear Mr Patrick James Sullivan,\n\nRe: Return of tenancy deposit — Flat 6, 14 Wellington Court, Edgbaston, Birmingham B16 9PJ\n\nI'm writing about the £980.77 deposit I paid on 13 April 2024 for the above property.\n\nIt looks like the deposit may never have been protected in a government-authorised scheme, and that I was not given the prescribed information. I've checked the DPS, mydeposits and TDS registers and can find no record of it.\n\nI'd genuinely like to resolve this directly, without either of us going to court.\n\nTo help me understand where things stand:\n  • How am I supposed to confirm my deposit was protected when none of the three schemes hold a record of it?\n  • What can we do to put this right between us?\n\nTo settle this now, please return the full £980.77 to me by 20 June 2026.\n\nIf I don't hear from you, I'll have little choice but to refer the matter to the County Court, where a tenant may be awarded the deposit plus a penalty of one to three times its value under section 214 of the Housing Act 2004. I would much rather settle it directly with you.\n\nPlease reply by 20 June 2026 so we can sort this out.\n\nYours sincerely,\nJamie Alexander Watson",
   "negotiationRounds": [
     {
+      "kind": "assessment",
       "label": "Round 1 — before any contact",
       "stage": "initial",
       "userReport": "Jamie uploads documents. No letter sent yet.",
@@ -36,6 +37,7 @@
       }
     },
     {
+      "kind": "assessment",
       "label": "Round 2 — landlord went silent",
       "stage": "post_letter",
       "userReport": "Jamie reports: \"I sent the Letter Before Action — no reply.\"",
@@ -50,10 +52,33 @@
         ]
       },
       "nextMove": {
-        "toolId": "county-court-claim-s214",
-        "title": "Issue a County Court claim under s214",
-        "deadline": "2030-05-13T00:00:00.000Z",
-        "rationale": "Information-gathering is exhausted — this is the decision step; consider a human lawyer."
+        "toolId": "lawyer-handoff",
+        "title": "Consult a lawyer before filing",
+        "rationale": "The penalty multiplier is discretionary — a lawyer should issue the s214 claim, not self-serve court filing.",
+        "deadline": "2030-05-13T00:00:00.000Z"
+      }
+    },
+    {
+      "kind": "court_filing",
+      "label": "Round 3 — filing the s214 claim",
+      "stage": "post_adr",
+      "branchLabel": "Not protected → court (s214 penalty)",
+      "userReport": "Jamie reports: \"Lawyer reviewed the bundle — filing the County Court claim.\"",
+      "courtFiling": {
+        "deposit": "£980.77",
+        "penaltyLow": "£980.77",
+        "penaltyHigh": "£2942.31",
+        "lbaResponseDeadline": "12 June 2026",
+        "limitationLongstop": "13 May 2030",
+        "legalBasis": "Housing Act 2004 s214 (deposit + 1–3× penalty)",
+        "checklist": [
+          "Signed tenancy agreement",
+          "Bank statement showing deposit payment",
+          "Blank prescribed-information fields (Schedule 1)",
+          "DPS / mydeposits / TDS negative search screenshots",
+          "Letter Before Action + proof of sending"
+        ],
+        "nextAction": "If the landlord does not return the deposit by 20 June 2026, issue a County Court claim (money claim) for return of the £980.77 deposit plus a penalty of £980.77–£2942.31 under s214 Housing Act 2004. Attach the evidence bundle."
       }
     }
   ],

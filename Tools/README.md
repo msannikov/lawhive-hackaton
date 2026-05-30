@@ -36,7 +36,7 @@ npm run demo:studio
 npm run demo:render
 ```
 
-Writes `Tools/out/workflow-demo.mp4` (39s, 1920×1080, 30fps).
+Writes `Tools/out/workflow-demo.mp4` (41s, 1920×1080, 30fps).
 
 ## Scene timeline
 
@@ -48,5 +48,5 @@ Writes `Tools/out/workflow-demo.mp4` (39s, 1920×1080, 30fps).
 | 360–510 | Unprotected branch, key dates & escalation |
 | 510–720 | 4-step action plan with deadlines |
 | 720–900 | **Letter Before Action** — generated `documentTemplate` |
-| 900–1080 | **Negotiation loop** — Round 1 MONITOR → Round 2 ESCALATE |
-| 1080–1170 | Outro |
+| 900–1140 | **Negotiation loop** — Round 1 MONITOR → Round 2 lawyer → Round 3 court filing |
+| 1140–1230 | Outro |

@@ -9,7 +9,7 @@ import {
 import assessmentData from "./data/assessment.json";
 import { FadeIn, Panel, Pill, StepBadge } from "./components/ui";
 import { escalationColor, formatDeadline, theme } from "./theme";
-import type { DemoAssessment } from "./types";
+import type { DemoAssessment, DemoNegotiationRound } from "./types";
 
 const data = assessmentData as DemoAssessment;
 
@@ -459,84 +459,177 @@ const LetterScene: React.FC = () => {
   );
 };
 
+const RoundCard: React.FC<{ round: DemoNegotiationRound; compact?: boolean }> = ({ round, compact = false }) => {
+  if (round.kind === "court_filing" && round.courtFiling) {
+    return <CourtFilingCard round={round} compact={compact} />;
+  }
+  if (!round.escalation) return null;
+
+  return (
+    <Panel
+      title={round.label}
+      style={{
+        borderColor: round.escalation.recommend ? theme.danger : theme.panelBorder,
+        padding: compact ? 20 : 28,
+      }}
+    >
+      <div style={{ fontSize: compact ? 14 : 16, color: theme.muted, marginBottom: 12, lineHeight: 1.45 }}>
+        {round.userReport}
+      </div>
+      <div style={{ fontSize: 12, color: theme.muted, marginBottom: 6 }}>context.stage = {round.stage}</div>
+      {round.escalation.recommend ? (
+        <div style={{ marginBottom: 10 }}>
+          <Pill text="SEE A LAWYER NOW" color={theme.danger} />
+        </div>
+      ) : null}
+      <div style={{ fontSize: 13, color: theme.muted, marginBottom: 6 }}>Escalation</div>
+      <div
+        style={{
+          fontSize: compact ? 20 : 24,
+          fontWeight: 700,
+          color: escalationColor(round.escalation.level),
+          marginBottom: 10,
+        }}
+      >
+        {round.escalation.level.replace("_", " ").toUpperCase()}
+      </div>
+      <p style={{ fontSize: compact ? 14 : 15, color: theme.muted, lineHeight: 1.45, marginBottom: 12 }}>
+        {round.escalation.reason}
+      </p>
+      {round.nextMove ? (
+        <>
+          <div style={{ fontSize: 13, color: theme.muted, marginBottom: 4 }}>Next move</div>
+          <div style={{ fontSize: compact ? 17 : 19, fontWeight: 700 }}>{round.nextMove.title}</div>
+          <div
+            style={{
+              fontSize: 14,
+              color: round.escalation.recommend ? theme.danger : theme.accent,
+              marginTop: 6,
+            }}
+          >
+            {round.nextMove.toolId === "lawyer-handoff"
+              ? "before County Court filing"
+              : `by ${formatDeadline(round.nextMove.deadline)}`}
+          </div>
+          <p style={{ fontSize: 13, color: theme.muted, marginTop: 8, lineHeight: 1.4 }}>{round.nextMove.rationale}</p>
+        </>
+      ) : null}
+    </Panel>
+  );
+};
+
+const CourtFilingCard: React.FC<{ round: DemoNegotiationRound; compact?: boolean }> = ({ round, compact = false }) => {
+  const filing = round.courtFiling!;
+
+  return (
+    <Panel
+      title={round.label}
+      style={{
+        borderColor: theme.success,
+        padding: compact ? 20 : 28,
+      }}
+    >
+      <div style={{ fontSize: compact ? 14 : 16, color: theme.muted, marginBottom: 12, lineHeight: 1.45 }}>
+        {round.userReport}
+      </div>
+      <div style={{ marginBottom: 12 }}>
+        <Pill text="County Court claim" color={theme.success} />
+      </div>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 10,
+          marginBottom: 14,
+        }}
+      >
+        <div style={{ padding: 12, borderRadius: 10, background: theme.bg }}>
+          <div style={{ fontSize: 12, color: theme.muted }}>Deposit</div>
+          <div style={{ fontSize: 20, fontWeight: 700 }}>{filing.deposit}</div>
+        </div>
+        <div style={{ padding: 12, borderRadius: 10, background: theme.bg }}>
+          <div style={{ fontSize: 12, color: theme.muted }}>s214 penalty (1–3×)</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: theme.warning }}>
+            {filing.penaltyLow} – {filing.penaltyHigh}
+          </div>
+        </div>
+      </div>
+      <div style={{ fontSize: 13, color: theme.muted, marginBottom: 8 }}>Evidence bundle</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 14 }}>
+        {filing.checklist.map((item) => (
+          <div key={item} style={{ fontSize: compact ? 13 : 14, color: theme.text }}>
+            ✓ {item}
+          </div>
+        ))}
+      </div>
+      <div style={{ fontSize: 13, color: theme.muted, marginBottom: 4 }}>File before</div>
+      <div style={{ fontSize: 16, fontWeight: 600, color: theme.accent }}>{filing.limitationLongstop}</div>
+      <p style={{ fontSize: 13, color: theme.muted, marginTop: 10, lineHeight: 1.4 }}>{filing.nextAction}</p>
+    </Panel>
+  );
+};
+
 const NegotiationScene: React.FC = () => {
   const frame = useCurrentFrame();
-  const round2Opacity = interpolate(frame, [50, 75], [0, 1], {
+  const round2Opacity = interpolate(frame, [40, 65], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const [round1, round2] = data.negotiationRounds;
+  const round3Opacity = interpolate(frame, [80, 105], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const [round1, round2, round3] = data.negotiationRounds;
 
   return (
-    <AbsoluteFill style={{ background: theme.bg, padding: 80, fontFamily: theme.font, color: theme.text }}>
+    <AbsoluteFill style={{ background: theme.bg, padding: "64px 72px", fontFamily: theme.font, color: theme.text }}>
       <SceneHeader />
-      <StepBadge index={6} label="Negotiation loop — user reports back, Law Gun re-assesses" active />
-      <FadeIn start={6} style={{ marginTop: 20, marginBottom: 24 }}>
-        <Panel style={{ padding: 20 }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 18, fontSize: 18, color: theme.muted }}>
+      <StepBadge index={6} label="Negotiation loop — 3 rounds, stateless re-assessment" active />
+      <FadeIn start={4} style={{ marginTop: 16, marginBottom: 20 }}>
+        <Panel style={{ padding: 16 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 14,
+              fontSize: 16,
+              color: theme.muted,
+              flexWrap: "wrap",
+            }}
+          >
             <Pill text="evaluateCase()" />
+            <span>→ act → report back</span>
+            <Pill text="initial" />
             <span>→</span>
-            <span>Tenant acts (sends letter)</span>
+            <Pill text="post_letter" />
             <span>→</span>
-            <span>Report back in context.stage</span>
+            <Pill text="file claim" color={theme.success} />
             <span>→</span>
             <Pill text="re-run" color={theme.success} />
           </div>
         </Panel>
       </FadeIn>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 18 }}>
         {round1 ? (
-          <FadeIn start={12}>
-            <Panel title={round1.label}>
-              <div style={{ fontSize: 16, color: theme.muted, marginBottom: 16, lineHeight: 1.45 }}>{round1.userReport}</div>
-              <div style={{ fontSize: 15, color: theme.muted, marginBottom: 8 }}>Escalation</div>
-              <div style={{ fontSize: 26, fontWeight: 700, color: escalationColor(round1.escalation.level), marginBottom: 16 }}>
-                {round1.escalation.level.replace("_", " ").toUpperCase()}
-              </div>
-              <p style={{ fontSize: 16, color: theme.muted, lineHeight: 1.5, marginBottom: 16 }}>{round1.escalation.reason}</p>
-              {round1.nextMove ? (
-                <>
-                  <div style={{ fontSize: 15, color: theme.muted, marginBottom: 6 }}>Next move</div>
-                  <div style={{ fontSize: 20, fontWeight: 700 }}>{round1.nextMove.title}</div>
-                  <div style={{ fontSize: 16, color: theme.accent, marginTop: 8 }}>
-                    by {formatDeadline(round1.nextMove.deadline)}
-                  </div>
-                </>
-              ) : null}
-            </Panel>
+          <FadeIn start={8}>
+            <RoundCard round={round1} compact />
           </FadeIn>
         ) : null}
         {round2 ? (
           <div style={{ opacity: round2Opacity }}>
-            <Panel title={round2.label} style={{ borderColor: round2.escalation.recommend ? theme.danger : theme.panelBorder }}>
-              <div style={{ fontSize: 16, color: theme.muted, marginBottom: 16, lineHeight: 1.45 }}>{round2.userReport}</div>
-              {round2.escalation.recommend ? (
-                <div style={{ marginBottom: 14 }}>
-                  <Pill text="SEE A LAWYER NOW" color={theme.danger} />
-                </div>
-              ) : null}
-              <div style={{ fontSize: 15, color: theme.muted, marginBottom: 8 }}>Escalation</div>
-              <div style={{ fontSize: 26, fontWeight: 700, color: escalationColor(round2.escalation.level), marginBottom: 16 }}>
-                {round2.escalation.level.replace("_", " ").toUpperCase()}
-              </div>
-              <p style={{ fontSize: 16, color: theme.muted, lineHeight: 1.5, marginBottom: 16 }}>{round2.escalation.reason}</p>
-              {round2.nextMove ? (
-                <>
-                  <div style={{ fontSize: 15, color: theme.muted, marginBottom: 6 }}>Next move</div>
-                  <div style={{ fontSize: 20, fontWeight: 700 }}>{round2.nextMove.title}</div>
-                  <div style={{ fontSize: 16, color: theme.danger, marginTop: 8 }}>
-                    by {formatDeadline(round2.nextMove.deadline)}
-                  </div>
-                  <p style={{ fontSize: 15, color: theme.muted, marginTop: 12, lineHeight: 1.45 }}>{round2.nextMove.rationale}</p>
-                </>
-              ) : null}
-            </Panel>
+            <RoundCard round={round2} compact />
+          </div>
+        ) : null}
+        {round3 ? (
+          <div style={{ opacity: round3Opacity }}>
+            <RoundCard round={round3} compact />
           </div>
         ) : null}
       </div>
-      <FadeIn start={80} style={{ marginTop: 20 }}>
-        <p style={{ textAlign: "center", fontSize: 20, color: theme.muted }}>
-          Self-serve while the letter can still move the landlord. Escalate only after information-gathering is exhausted.
+      <FadeIn start={115} style={{ marginTop: 18 }}>
+        <p style={{ textAlign: "center", fontSize: 19, color: theme.muted }}>
+          Round 1: self-serve. Round 2: silent landlord → lawyer handoff. Round 3: s214 County Court filing pack.
         </p>
       </FadeIn>
     </AbsoluteFill>
@@ -603,10 +696,10 @@ export const WorkflowDemo: React.FC = () => {
       <Sequence from={720} durationInFrames={180}>
         <LetterScene />
       </Sequence>
-      <Sequence from={900} durationInFrames={180}>
+      <Sequence from={900} durationInFrames={240}>
         <NegotiationScene />
       </Sequence>
-      <Sequence from={1080} durationInFrames={90}>
+      <Sequence from={1140} durationInFrames={90}>
         <OutroScene />
       </Sequence>
     </AbsoluteFill>
