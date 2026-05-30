@@ -60,6 +60,35 @@ export interface Tool {
   documentTemplate?: string;
 }
 
+/**
+ * Negotiation posture — how close the user is to the irreversible decision
+ * (court / lawyer). The whole system is built to keep this at `self_serve` /
+ * `monitor` and only reach `escalate` when information-gathering is exhausted.
+ */
+export type EscalationLevel = "self_serve" | "monitor" | "escalate";
+
+/** The decision gate: should the user bring in a human lawyer now? */
+export interface EscalationSignal {
+  level: EscalationLevel;
+  /** True iff level === "escalate". */
+  recommend: boolean;
+  reason: string;
+  /** Which conditions fired / are being watched. */
+  triggers: string[];
+}
+
+/**
+ * The single recommended move for THIS round. The full arsenal stays in
+ * `tools`; this just points at what to do next and frames WHY in negotiation
+ * terms (what information the move is meant to surface).
+ */
+export interface NextMove {
+  toolId: string;
+  title: string;
+  rationale: string;
+  deadline: Date;
+}
+
 /** The rules-engine result for a case (produced by `playbook.assess`). */
 export interface CaseAssessment {
   /** Domain-specific branch id (string so it's open across playbooks). */
@@ -68,7 +97,12 @@ export interface CaseAssessment {
   summary: string;
   reasoning: string[];
   keyDates: Record<string, string>;
+  /** The full arsenal — every tool with its deadline ("when to fire it"). */
   tools: Tool[];
+  /** The one move recommended for this round (negotiation framing). */
+  nextMove?: NextMove;
+  /** Decision gate: self-serve vs monitor vs escalate to a human lawyer. */
+  escalation: EscalationSignal;
 }
 
 /* ------------------------------------------------------------------ *

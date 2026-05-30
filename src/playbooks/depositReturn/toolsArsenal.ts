@@ -234,24 +234,67 @@ export function buildToolsForBranch(
   return BUILDERS[branch](c, k).sort((a, b) => a.priority - b.priority);
 }
 
+/**
+ * Calibrated demand letter (Never Split the Difference style). It is an
+ * information-gathering instrument, not boilerplate: a label to name the
+ * situation, a disarming line, calibrated "How/What" questions the landlord
+ * must answer to engage, a concrete deadline, and a compliant statement of
+ * consequences. The job of this letter is to GET A RESPONSE — that response is
+ * the information the next round depends on.
+ */
 function letterBeforeActionTemplate(c: TenantCase, k: KeyDates): string {
-  return [
+  const deadline = formatUK(k.letterBeforeActionResponseDeadline);
+  const amount = money(c.deposit.amount);
+  const unprotected = !c.protection.protectedInScheme;
+
+  const lines = [
     `Dear ${c.landlord.name},`,
     ``,
-    `Re: Tenancy deposit for ${c.property.address}`,
+    `Re: Return of tenancy deposit — ${c.property.address}`,
     ``,
-    `I paid you a deposit of ${money(c.deposit.amount)} on ${formatUK(k.depositPaidDate)} in ` +
-      `connection with my tenancy that began on ${formatUK(k.requestDate)}.`,
-    `I am writing to request the return of this deposit in full.`,
+    `I'm writing about the ${amount} deposit I paid on ${formatUK(k.depositPaidDate)} for the ` +
+      `above property.`,
     ``,
-    `Please return ${money(c.deposit.amount)} to me by ${formatUK(
-      k.letterBeforeActionResponseDeadline,
-    )}.`,
-    `If I do not receive it, I intend to pursue the matter through dispute resolution and, if ` +
-      `necessary, the County Court, including any statutory penalty to which I am entitled ` +
-      `under the Housing Act 2004.`,
+  ];
+
+  if (unprotected) {
+    // Label + the leverage (no scheme record).
+    lines.push(
+      `It looks like the deposit may never have been protected in a government-authorised ` +
+        `scheme, and that I was not given the prescribed information. I've checked the DPS, ` +
+        `mydeposits and TDS registers and can find no record of it.`,
+    );
+  } else {
+    lines.push(
+      `The tenancy has ended and I've asked for the deposit back, but I haven't had a clear ` +
+        `response.`,
+    );
+  }
+
+  lines.push(
+    ``,
+    // Disarming / accusation audit.
+    `I'd genuinely like to resolve this directly, without either of us going to court.`,
+    ``,
+    // Calibrated questions — these require a reply (= information).
+    `To help me understand where things stand:`,
+    unprotected
+      ? `  • How am I supposed to confirm my deposit was protected when none of the three schemes hold a record of it?`
+      : `  • How am I supposed to plan around this while the return is outstanding?`,
+    `  • What can we do to put this right between us?`,
+    ``,
+    `To settle this now, please return the full ${amount} to me by ${deadline}.`,
+    ``,
+    `If I don't hear from you, I'll have little choice but to refer the matter to the County ` +
+      `Court, where a tenant may be awarded the deposit plus a penalty of one to three times ` +
+      `its value under section 214 of the Housing Act 2004. I would much rather settle it ` +
+      `directly with you.`,
+    ``,
+    `Please reply by ${deadline} so we can sort this out.`,
     ``,
     `Yours sincerely,`,
     c.tenant.name,
-  ].join("\n");
+  );
+
+  return lines.join("\n");
 }

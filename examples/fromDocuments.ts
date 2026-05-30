@@ -39,6 +39,17 @@ console.log("=".repeat(72));
 
 console.log("\nBranch:", assessment.branchLabel, `(${assessment.branch})`);
 
+const esc = assessment.escalation;
+console.log(`\nEscalation: ${esc.level.toUpperCase()}${esc.recommend ? " — SEE A LAWYER NOW" : ""}`);
+console.log(`  ${esc.reason}`);
+if (esc.triggers.length) console.log(`  triggers: ${esc.triggers.join(", ")}`);
+
+if (assessment.nextMove) {
+  console.log("\nNext move:", assessment.nextMove.title);
+  console.log(`  ${assessment.nextMove.rationale}`);
+  console.log(`  by ${formatUK(assessment.nextMove.deadline)}`);
+}
+
 console.log("\nExtracted facts (provenance):");
 for (const e of assessment.extraction.evidence) {
   console.log(`  • ${e.field} = ${JSON.stringify(e.value)}  [${e.source}]`);

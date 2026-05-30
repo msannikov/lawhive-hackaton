@@ -9,7 +9,13 @@
  * continuity-of-employment rules, automatic-unfair grounds, etc.
  */
 
-import type { Playbook, CaseAssessment, CaseInput, Tool } from "../../core/types.ts";
+import type {
+  Playbook,
+  CaseAssessment,
+  CaseInput,
+  Tool,
+  EscalationSignal,
+} from "../../core/types.ts";
 import type { EmploymentCase, EmploymentBranch, TerminationType } from "./case.ts";
 import {
   employmentJsonSchema,
@@ -17,6 +23,7 @@ import {
   EXTRACTION_INSTRUCTIONS,
 } from "./schema.ts";
 import { parseISO, addMonths, addCalendarDays, addYears, formatUK, isAfter } from "../../core/dates.ts";
+import { buildNextMove } from "../../core/negotiation.ts";
 
 const TERMINATION_TYPES: TerminationType[] = ["dismissal", "redundancy", "resignation", "other"];
 
@@ -125,8 +132,35 @@ function assess(c: EmploymentCase): CaseAssessment {
     },
   ];
 
+  const escalation: EscalationSignal =
+    branch === "REVIEW_NEEDED"
+      ? {
+          level: "escalate",
+          recommend: true,
+          reason:
+            "Key employment dates are missing — a human should review before acting, as tribunal deadlines are strict.",
+          triggers: ["incomplete_facts"],
+        }
+      : branch === "UNFAIR_DISMISSAL_POSSIBLE"
+        ? {
+            level: "monitor",
+            recommend: false,
+            reason:
+              "Start ACAS Early Conciliation yourself, but get a lawyer to review before lodging an ET1 — tribunal claims are complex and strictly time-limited.",
+            triggers: ["watch:before_et1", "complex_claim"],
+          }
+        : {
+            level: "self_serve",
+            recommend: false,
+            reason:
+              "Under 2 years' service limits unfair-dismissal rights; check notice and holiday pay yourself. Escalate only if discrimination or automatic-unfair grounds apply.",
+            triggers: ["watch:discrimination_grounds"],
+          };
+
+  const nextMove = buildNextMove(tools, escalation.recommend);
+
   const summary =
-    `Matched branch "${BRANCH_LABELS[branch]}" with ${tools.length} tool(s). ` +
+    `Matched branch "${BRANCH_LABELS[branch]}" (${escalation.level}) with ${tools.length} tool(s). ` +
     `ACAS/ET deadline: ${formatUK(etLimit)}.`;
 
   return {
@@ -139,6 +173,8 @@ function assess(c: EmploymentCase): CaseAssessment {
       "ACAS / ET deadline": formatUK(etLimit),
     },
     tools,
+    nextMove,
+    escalation,
   };
 }
 

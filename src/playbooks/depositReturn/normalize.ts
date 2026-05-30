@@ -147,6 +147,8 @@ export function normalizeTenantCase(
     evaluationDate: ctx.evaluationDate
       ? coerceDate(ctx.evaluationDate, "context.evaluationDate")
       : undefined,
+    negotiationStage:
+      ctx.stage === "post_letter" || ctx.stage === "post_adr" ? ctx.stage : "initial",
   };
 }
 

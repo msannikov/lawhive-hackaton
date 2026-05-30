@@ -60,6 +60,12 @@ export interface TenantCase {
   depositRequestDate?: ISODate;
   forwardingAddressProvided?: boolean;
   evaluationDate?: ISODate;
+  /**
+   * Where the user is in the negotiation. Declared by the orchestrator each
+   * round (no internal state machine): "initial" before any letter, "post_letter"
+   * after the demand was sent, "post_adr" after scheme ADR. Drives escalation.
+   */
+  negotiationStage?: "initial" | "post_letter" | "post_adr";
 }
 
 /** The four terminal outcomes of the deposit decision tree. */
