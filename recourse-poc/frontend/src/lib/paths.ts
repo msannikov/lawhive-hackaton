@@ -13,7 +13,10 @@ export function unflatten(flat: Record<string, unknown>): Record<string, unknown
     let node = out;
     for (let i = 0; i < parts.length - 1; i++) {
       const p = parts[i]!;
-      if (typeof node[p] !== "object" || node[p] === null) node[p] = {};
+      const childIsArray = /^\d+$/.test(parts[i + 1]!);
+      if (node[p] === undefined || node[p] === null || typeof node[p] !== "object") {
+        node[p] = childIsArray ? [] : {};
+      }
       node = node[p];
     }
     node[parts[parts.length - 1]!] = v;

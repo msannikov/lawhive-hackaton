@@ -13,6 +13,8 @@
  * avoids that trap.
  */
 
+import { getPlaybook, PLAYBOOKS } from "../../../src/playbooks/registry.ts";
+
 export type IntakeFieldType =
   | "text"
   | "number"
@@ -169,10 +171,95 @@ const DEPOSIT_RETURN_INTAKE: IntakeSchema = {
   ],
 };
 
+// Hand-authored schemas take precedence; every other registered playbook gets a
+// schema DERIVED from its extraction jsonSchema (see below).
 export const INTAKE_SCHEMAS: Record<string, IntakeSchema> = {
   deposit_return: DEPOSIT_RETURN_INTAKE,
 };
 
+// ── Generic intake schema derived from a playbook's extraction jsonSchema ─────
+// The VLM extraction schema already describes every fact + which are required,
+// so we flatten it (nested objects → dotted field names, arrays + `evidence`
+// skipped) into the funnel's IntakeField shape. One converter serves all domains.
+
+function humanize(seg: string): string {
+  const words = seg.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/[_-]+/g, " ").trim();
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
+
+function fieldType(name: string, prop: any): IntakeFieldType {
+  const types: string[] = Array.isArray(prop?.type) ? prop.type : prop?.type ? [prop.type] : [];
+  const desc: string = typeof prop?.description === "string" ? prop.description : "";
+  if (Array.isArray(prop?.enum)) return "select";
+  if (types.includes("boolean")) return "boolean";
+  if (types.includes("number") || types.includes("integer")) {
+    return /amount|price|fee|total|cost|sum|paid|deposit|salary|wage|pay|compensation|quote|balance|owed/i.test(name) ||
+      /£|gbp/i.test(desc)
+      ? "money"
+      : "number";
+  }
+  if (/YYYY-MM-DD/.test(desc) || /date$/i.test(name)) return "date";
+  if (/details|description|reason|notes|summary|message|narrative/i.test(name)) return "textarea";
+  return "text";
+}
+
+function collectFields(schema: any, prefix: string, parentRequired: boolean, group: string, out: IntakeField[]): void {
+  const props = (schema && schema.properties) || {};
+  const required: string[] = Array.isArray(schema?.required) ? schema.required : [];
+  for (const [name, raw] of Object.entries<any>(props)) {
+    if (name === "evidence") continue;
+    const path = prefix ? `${prefix}.${name}` : name;
+    const isReq = parentRequired && required.includes(name);
+    const types: string[] = Array.isArray(raw?.type) ? raw.type : raw?.type ? [raw.type] : [];
+    if (types.includes("array")) {
+      // A REQUIRED array of objects (e.g. line items) → collect one representative
+      // entry at index 0 so the form satisfies "at least one". Optional/scalar arrays skipped.
+      const items: any = raw.items;
+      const itemTypes: string[] = Array.isArray(items?.type) ? items.type : items?.type ? [items.type] : [];
+      if (isReq && itemTypes.includes("object") && items?.properties) {
+        collectFields(items, `${path}.0`, true, humanize(name), out);
+      }
+      continue;
+    }
+    if (types.includes("object") && raw.properties) {
+      collectFields(raw, path, isReq, humanize(name), out);
+      continue;
+    }
+    const type = fieldType(name, raw);
+    const field: IntakeField = { name: path, label: humanize(name), type, group: group || "Details" };
+    if (isReq) field.required = true;
+    if (typeof raw?.description === "string" && raw.description.length <= 90 && !/YYYY-MM-DD/.test(raw.description)) {
+      field.help = raw.description;
+    }
+    if (type === "select" && Array.isArray(raw.enum)) {
+      field.options = raw.enum.filter((v: unknown) => typeof v === "string").map((v: string) => ({ value: v, label: humanize(v) }));
+    }
+    out.push(field);
+  }
+}
+
+function deriveIntakeSchema(domain: string): IntakeSchema | undefined {
+  let pb;
+  try {
+    pb = getPlaybook(domain);
+  } catch {
+    return undefined;
+  }
+  const fields: IntakeField[] = [];
+  collectFields(pb.extraction.jsonSchema as any, "", true, "", fields);
+  if (!fields.length) return undefined;
+  const subject = pb.label.replace(/^UK\s+/i, "").replace(/\s*\(.*\)$/, "").trim();
+  return {
+    domain,
+    title: `Tell us about your ${subject} issue`,
+    intro: "A few questions so we can work out your options and the dates that matter. Anything filled in from your documents can be edited.",
+    fields,
+  };
+}
+
+/** Hand-authored schema if present, else one derived from the playbook. */
 export function getIntakeSchema(domain: string): IntakeSchema | undefined {
-  return INTAKE_SCHEMAS[domain];
+  if (INTAKE_SCHEMAS[domain]) return INTAKE_SCHEMAS[domain];
+  if (domain in PLAYBOOKS) return deriveIntakeSchema(domain);
+  return undefined;
 }
