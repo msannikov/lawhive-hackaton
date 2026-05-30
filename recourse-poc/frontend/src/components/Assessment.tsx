@@ -1,5 +1,6 @@
 import type { CaseAssessment } from "../types";
 import EscalationBanner from "./EscalationBanner";
+import NegotiationPanel, { type NegotiationApi } from "./NegotiationPanel";
 import NextMove from "./NextMove";
 import ReasoningTrace from "./ReasoningTrace";
 import Toolset from "./Toolset";
@@ -7,10 +8,11 @@ import Timeline from "./Timeline";
 
 interface Props {
   assessment: CaseAssessment;
+  neg: NegotiationApi;
   onOpenTool: (id: string) => void;
 }
 
-export default function Assessment({ assessment, onOpenTool }: Props) {
+export default function Assessment({ assessment, neg, onOpenTool }: Props) {
   return (
     <section className="assessment">
       <div className="assessment-head">
@@ -19,6 +21,8 @@ export default function Assessment({ assessment, onOpenTool }: Props) {
       </div>
 
       <EscalationBanner escalation={assessment.escalation} />
+
+      <NegotiationPanel neg={neg} />
 
       <div className="assessment-grid">
         <div className="assessment-main">

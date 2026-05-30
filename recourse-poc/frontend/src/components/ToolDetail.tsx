@@ -12,9 +12,10 @@ interface Props {
   onClaimClick: (c: GroundedClaim) => void;
   activeClaimId: string | null;
   onBack: () => void;
+  onLetterSent?: () => void;
 }
 
-export default function ToolDetail({ tool, facts, onClaimClick, activeClaimId, onBack }: Props) {
+export default function ToolDetail({ tool, facts, onClaimClick, activeClaimId, onBack, onLetterSent }: Props) {
   return (
     <section className="tool-detail">
       <button type="button" className="back-link" onClick={onBack}>
@@ -32,7 +33,7 @@ export default function ToolDetail({ tool, facts, onClaimClick, activeClaimId, o
       />
       {tool.legalBasis && <p className="legal-basis">Legal basis: {tool.legalBasis}</p>}
 
-      <Panel tool={tool} facts={facts} onClaimClick={onClaimClick} activeClaimId={activeClaimId} />
+      <Panel tool={tool} facts={facts} onClaimClick={onClaimClick} activeClaimId={activeClaimId} onLetterSent={onLetterSent} />
     </section>
   );
 }
@@ -42,18 +43,20 @@ function Panel({
   facts,
   onClaimClick,
   activeClaimId,
+  onLetterSent,
 }: {
   tool: Tool;
   facts: Facts;
   onClaimClick: (c: GroundedClaim) => void;
   activeClaimId: string | null;
+  onLetterSent?: () => void;
 }) {
   switch (tool.category) {
     case "verify":
       return <VerifyPanel facts={facts} />;
     case "letter":
     case "chase":
-      return <LetterPanel facts={facts} onClaimClick={onClaimClick} activeClaimId={activeClaimId} />;
+      return <LetterPanel facts={facts} onClaimClick={onClaimClick} activeClaimId={activeClaimId} onSent={onLetterSent} />;
     case "evidence":
       return <EvidencePanel tool={tool} />;
     case "adr":
