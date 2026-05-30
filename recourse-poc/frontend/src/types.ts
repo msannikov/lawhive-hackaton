@@ -189,3 +189,22 @@ export interface ExtractResult {
   warnings: string[];
   provider: string;
 }
+
+// ── Negotiation loop ─────────────────────────────────────────────────────────
+export type NegStage = "initial" | "post_letter" | "post_adr";
+export type LandlordResponse = "agrees_in_full" | "disputes_deductions" | "silent" | "unknown";
+
+export interface ClassifyResult {
+  landlordResponse: LandlordResponse;
+  rationale: string;
+  source: "model" | "heuristic";
+}
+
+/** One entry in the visible case history. */
+export interface LogEvent {
+  id: string;
+  at: string; // ISO date the event was logged
+  title: string;
+  detail?: string;
+  tone?: "neutral" | "good" | "warn" | "bad";
+}

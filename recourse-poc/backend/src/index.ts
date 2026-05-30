@@ -9,14 +9,14 @@
  *   Demo:        GET  /api/cases, POST /api/generate        (preset DepositCases)
  *
  * The team Playbook engine (src/) owns branch + tools + dates + negotiation.
- * Recourse's grounded pipeline owns the verified deposit letter. The API never
+ * Law Gun's grounded pipeline owns the verified deposit letter. The API never
  * returns an unverified letter — a persistent validation failure becomes a 422.
  */
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 
-// Recourse (deposit letter service) ------------------------------------------
+// Law Gun (deposit letter service) -------------------------------------------
 import { GenerateRequestSchema } from "./models";
 import { getCase, listCases } from "./cases";
 import { runLetterPipeline } from "./letterPipeline";
@@ -24,6 +24,7 @@ import { serializeAssessment } from "./serialize";
 import { getTaxonomy } from "./taxonomy";
 import { getIntakeSchema } from "./intakeSchemas";
 import { tenantCaseToDepositCase, type AdapterOverrides } from "./adapters/tenantCaseToDepositCase";
+import { classifyLandlordResponse } from "./classifyResponse";
 
 // Team engine (the Playbook framework) ---------------------------------------
 import { assessFromFacts } from "../../../src/assessFromFacts.ts";
@@ -88,7 +89,7 @@ app.post("/api/playbooks/:domain/extract", async (ctx) => {
   }
 });
 
-// ── Deposit grounded letter (Recourse pipeline) ──────────────────────────────
+// ── Deposit grounded letter (Law Gun pipeline) ───────────────────────────────
 app.post("/api/playbooks/deposit_return/letter", async (ctx) => {
   const body = await ctx.req.json().catch(() => ({}));
   const { facts, context, overrides } = body ?? {};
@@ -107,6 +108,14 @@ app.post("/api/playbooks/deposit_return/letter", async (ctx) => {
   } catch (e) {
     return ctx.json({ error: "letter_failed", detail: (e as Error).message }, 400);
   }
+});
+
+// ── Classify a pasted landlord reply (AI at the edge; heuristic offline) ─────
+app.post("/api/playbooks/:domain/classify-response", async (ctx) => {
+  const body = await ctx.req.json().catch(() => ({}));
+  const message = typeof body?.message === "string" ? body.message : "";
+  const result = await classifyLandlordResponse(message);
+  return ctx.json(result);
 });
 
 // ── Demo preset cases (back-compat) ──────────────────────────────────────────
