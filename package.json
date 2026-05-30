@@ -10,7 +10,8 @@
     "demo:capture:claude": "node --experimental-strip-types Tools/scripts/captureAssessmentClaude.ts",
     "demo:studio": "npm run studio --prefix Tools",
     "demo:render": "npm run render --prefix Tools",
-    "demo:render:claude": "npm run render:claude --prefix Tools"
+    "demo:render:claude": "npm run render:claude --prefix Tools",
+    "demo:render:recourse": "npm run render:recourse --prefix Tools"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
