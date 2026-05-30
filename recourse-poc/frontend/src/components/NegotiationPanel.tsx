@@ -41,20 +41,23 @@ export default function NegotiationPanel({ neg }: { neg: NegotiationApi }) {
   return (
     <div className="neg-panel">
       <div className="neg-head">
-        <h3>Your negotiation</h3>
+        <div>
+          <h3>Keep your case moving</h3>
+          <p className="neg-status-line">{describe(neg)}</p>
+        </div>
         <span className={"neg-stage stage-" + neg.stage}>{STAGE_LABEL[neg.stage]}</span>
       </div>
-      <p className="neg-status-line">{describe(neg)}</p>
 
       {neg.awaiting && (
         <div className="awaiting-prompt">
           <strong>Has the landlord replied?</strong>
           <div className="awaiting-actions">
             <button type="button" className="primary-btn" onClick={() => setLogging(true)}>
-              Log their reply
+              Yes — log their reply
             </button>
             <button type="button" className="ghost-btn" onClick={neg.onNoResponse}>
-              No — nothing by {formatDate(neg.awaiting.dueBy)}
+              <span className="ico">🔇</span>
+              <span>No reply by {formatDate(neg.awaiting.dueBy)}</span>
             </button>
           </div>
         </div>
@@ -63,22 +66,27 @@ export default function NegotiationPanel({ neg }: { neg: NegotiationApi }) {
       <div className="neg-actions">
         {neg.stage === "initial" && !neg.awaiting && (
           <button type="button" className="ghost-btn" onClick={neg.onSent}>
-            I've sent my letter / demand
+            <span className="ico">✉️</span>
+            <span>I've sent the letter</span>
           </button>
         )}
         {!neg.awaiting && (
           <button type="button" className="ghost-btn" onClick={() => setLogging(true)}>
-            Log the landlord's reply
+            <span className="ico">💬</span>
+            <span>Tell us what they said</span>
           </button>
         )}
         <button type="button" className="ghost-btn" onClick={neg.onNoResponse}>
-          Landlord went silent
+          <span className="ico">🔇</span>
+          <span>Landlord's gone quiet</span>
         </button>
         <button type="button" className="ghost-btn" onClick={neg.onAdrUnresolved}>
-          ADR didn't resolve it
+          <span className="ico">⚖️</span>
+          <span>ADR didn't work</span>
         </button>
         <button type="button" className="ghost-btn good" onClick={() => neg.onResolve()}>
-          Deposit returned ✓
+          <span className="ico">🎉</span>
+          <span>I got my deposit back</span>
         </button>
       </div>
 

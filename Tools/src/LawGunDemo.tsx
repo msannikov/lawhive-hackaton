@@ -74,8 +74,8 @@ const Scenes: React.FC = () => (
     <Sequence durationInFrames={75}><TitleScene /></Sequence>
     <Sequence from={75} durationInFrames={150}><Shot file="screens/01-landing.png" h={1200} pan={-110} dur={150} /></Sequence>
     <Sequence from={225} durationInFrames={180}><Shot file="screens/03-intake.png" h={1983} pan={-820} dur={180} /></Sequence>
-    <Sequence from={405} durationInFrames={210}><Shot file="screens/04-plan.png" h={1432} pan={-340} dur={210} /></Sequence>
-    <Sequence from={615} durationInFrames={210}><Shot file="screens/05-letter.png" h={3448} pan={-760} dur={210} /></Sequence>
+    <Sequence from={405} durationInFrames={210}><Shot file="screens/04-plan.png" h={1717} pan={-620} dur={210} /></Sequence>
+    <Sequence from={615} durationInFrames={210}><Shot file="screens/05-letter.png" h={3672} pan={-820} dur={210} /></Sequence>
     <Sequence from={825} durationInFrames={270}><Shot file="screens/06-drawer.png" h={1200} pan={-110} dur={270} /></Sequence>
     <Sequence from={1095} durationInFrames={90}><OutroScene /></Sequence>
   </AbsoluteFill>

@@ -50,6 +50,7 @@ export default function IntakeForm({ schema, domain, onSubmit }: Props) {
       {schema.intro && <p className="section-sub">{schema.intro}</p>}
 
       <DocUploadAccelerator domain={domain} onExtracted={prefill} />
+      <div className="intake-or">or fill it in yourself</div>
 
       {groups.map((g) => (
         <fieldset key={g.name || "_"} className="intake-group">

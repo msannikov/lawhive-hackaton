@@ -60,6 +60,12 @@ function parseBold(str: string, keyBase: string): ReactNode[] {
   );
 }
 
+/** "Housing Act 2004, s.213(3)" → "s.213(3)" for a compact inline citation. */
+function shortCite(citation: string): string {
+  const m = citation.match(/s\.\S+/);
+  return m ? m[0] : citation;
+}
+
 function inline(
   text: string,
   claims: GroundedClaim[],
@@ -72,10 +78,17 @@ function inline(
       const c = seg.claim;
       const cls = "prov" + (c.verified ? " ok" : " bad") + (activeId === c.claim_id ? " active" : "");
       return (
-        <button key={`${keyBase}-c${i}`} className={cls} onClick={() => onClick(c)} title={c.citation}>
-          {seg.text}
-          <sup className="prov-mark">{c.verified ? "✓" : "✗"}</sup>
-        </button>
+        <Fragment key={`${keyBase}-c${i}`}>
+          <button className={cls} onClick={() => onClick(c)} title={c.citation}>
+            {seg.text}
+            <sup className="prov-mark">{c.verified ? "✓" : "✗"}</sup>
+          </button>
+          {c.verified && (
+            <button className="prov-cite" onClick={() => onClick(c)} title={`View ${c.citation}`}>
+              {" "}({shortCite(c.citation)})
+            </button>
+          )}
+        </Fragment>
       );
     }
     return <Fragment key={`${keyBase}-s${i}`}>{parseBold(seg.text, `${keyBase}-s${i}`)}</Fragment>;

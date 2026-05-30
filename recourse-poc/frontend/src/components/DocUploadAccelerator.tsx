@@ -30,19 +30,20 @@ interface Props {
 }
 
 export default function DocUploadAccelerator({ domain, onExtracted }: Props) {
-  const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [count, setCount] = useState(0);
 
   async function onFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
     setBusy(true);
     setMsg(null);
+    setCount(files.length);
     try {
       const docs = await Promise.all(Array.from(files).map(toDocInput));
       const result = await extractFacts(domain, docs);
       onExtracted(result.facts);
-      setMsg(`Pre-filled from ${docs.length} document${docs.length > 1 ? "s" : ""} (${result.provider}). Check the answers below.`);
+      setMsg(`✓ Read ${docs.length} document${docs.length > 1 ? "s" : ""} and filled in your answers below — have a quick check.`);
     } catch (e) {
       setMsg("Couldn't read those documents — please fill the form in manually. " + String(e));
     } finally {
@@ -51,21 +52,27 @@ export default function DocUploadAccelerator({ domain, onExtracted }: Props) {
   }
 
   return (
-    <div className="uploader">
-      <button type="button" className="uploader-toggle" onClick={() => setOpen((o) => !o)}>
-        {open ? "▾" : "▸"} Have the paperwork? Upload it to fill this in automatically
-      </button>
-      {open && (
-        <div className="uploader-body">
-          <p className="field-help">
-            Add your tenancy agreement, a bank statement showing the deposit, and any deposit-scheme search
-            screenshots. We read them and pre-fill the answers for you to check — nothing is sent anywhere.
-          </p>
-          <input type="file" multiple accept=".pdf,.png,.jpg,.jpeg" disabled={busy} onChange={(e) => onFiles(e.target.files)} />
-          {busy && <div className="loading">Reading your documents…</div>}
-          {msg && <p className="uploader-msg">{msg}</p>}
+    <label className="uploader" htmlFor="doc-upload">
+      <div className="uploader-icon">📎</div>
+      <div className="uploader-text">
+        <div className="uploader-title">Skip the typing — upload your paperwork</div>
+        <div className="uploader-sub">
+          Drop your tenancy agreement, a bank statement showing the deposit, and your deposit-scheme
+          screenshots. Law Gun reads them and fills this in for you.
         </div>
-      )}
-    </div>
+        {busy && <div className="uploader-msg busy">Reading your {count} document{count > 1 ? "s" : ""}…</div>}
+        {msg && <div className="uploader-msg">{msg}</div>}
+      </div>
+      <input
+        id="doc-upload"
+        type="file"
+        multiple
+        accept=".pdf,.png,.jpg,.jpeg"
+        disabled={busy}
+        onChange={(e) => onFiles(e.target.files)}
+        style={{ display: "none" }}
+      />
+      <span className="uploader-cta">Choose files</span>
+    </label>
   );
 }
