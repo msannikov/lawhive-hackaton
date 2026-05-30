@@ -1,4 +1,62 @@
 {
+  "brand": {
+    "product": "Law Gun",
+    "title": "Tenancy Deposit Return",
+    "subtitle": "Your landlord never protected £980.77. Law Gun reads your tenancy papers, drafts your Letter Before Action, and re-assesses when you report back."
+  },
+  "caseMeta": {
+    "tenantName": "Jamie Alexander Watson",
+    "landlordName": "Mr Patrick James Sullivan",
+    "propertyAddress": "Flat 6, 14 Wellington Court, Edgbaston, Birmingham B16 9PJ",
+    "depositAmount": 980.77,
+    "depositFormatted": "£980.77",
+    "problem": "Deposit not found in DPS, mydeposits or TDS",
+    "playbookLabel": "UK tenancy deposit return"
+  },
+  "letterTemplate": "Dear Mr Patrick James Sullivan,\n\nRe: Return of tenancy deposit — Flat 6, 14 Wellington Court, Edgbaston, Birmingham B16 9PJ\n\nI'm writing about the £980.77 deposit I paid on 13 April 2024 for the above property.\n\nIt looks like the deposit may never have been protected in a government-authorised scheme, and that I was not given the prescribed information. I've checked the DPS, mydeposits and TDS registers and can find no record of it.\n\nI'd genuinely like to resolve this directly, without either of us going to court.\n\nTo help me understand where things stand:\n  • How am I supposed to confirm my deposit was protected when none of the three schemes hold a record of it?\n  • What can we do to put this right between us?\n\nTo settle this now, please return the full £980.77 to me by 20 June 2026.\n\nIf I don't hear from you, I'll have little choice but to refer the matter to the County Court, where a tenant may be awarded the deposit plus a penalty of one to three times its value under section 214 of the Housing Act 2004. I would much rather settle it directly with you.\n\nPlease reply by 20 June 2026 so we can sort this out.\n\nYours sincerely,\nJamie Alexander Watson",
+  "negotiationRounds": [
+    {
+      "label": "Round 1 — before any contact",
+      "stage": "initial",
+      "userReport": "Jamie uploads documents. No letter sent yet.",
+      "branchLabel": "Not protected → court (s214 penalty)",
+      "escalation": {
+        "level": "monitor",
+        "recommend": false,
+        "reason": "Send the calibrated Letter Before Action yourself to surface the landlord's position. Bring in a lawyer before issuing the s214 claim — the penalty multiplier is discretionary.",
+        "triggers": [
+          "watch:before_court_filing"
+        ]
+      },
+      "nextMove": {
+        "toolId": "verify-protection-online",
+        "title": "Verify protection status on all three schemes",
+        "deadline": "2026-06-02T00:00:00.000Z",
+        "rationale": "Gather your leverage first — this is the evidence your demand will stand on."
+      }
+    },
+    {
+      "label": "Round 2 — landlord went silent",
+      "stage": "post_letter",
+      "userReport": "Jamie reports: \"I sent the Letter Before Action — no reply.\"",
+      "branchLabel": "Not protected → court (s214 penalty)",
+      "escalation": {
+        "level": "escalate",
+        "recommend": true,
+        "reason": "Deposit unprotected and no voluntary return after your letter — get a lawyer to issue the s214 claim (the 1–3× penalty is discretionary).",
+        "triggers": [
+          "no_return_after_letter",
+          "discretionary_penalty"
+        ]
+      },
+      "nextMove": {
+        "toolId": "county-court-claim-s214",
+        "title": "Issue a County Court claim under s214",
+        "deadline": "2030-05-13T00:00:00.000Z",
+        "rationale": "Information-gathering is exhausted — this is the decision step; consider a human lawyer."
+      }
+    }
+  ],
   "domain": "deposit_return",
   "branch": "NOT_PROTECTED_COURT",
   "branchLabel": "Not protected → court (s214 penalty)",
@@ -127,23 +185,23 @@
   "workflowSteps": [
     {
       "id": "documents",
-      "label": "Documents",
-      "detail": "Unstructured PDFs & images from the tenant"
+      "label": "Your evidence",
+      "detail": "Tenancy agreement, bank proof & scheme searches"
     },
     {
       "id": "extract",
-      "label": "VLM extraction",
-      "detail": "Claude / Gemini pulls facts via playbook schema"
+      "label": "Read the docs",
+      "detail": "Extract deposit amount, dates & protection status"
     },
     {
       "id": "normalize",
-      "label": "Normalise",
-      "detail": "Validate + type into domain case"
+      "label": "Check the law",
+      "detail": "30-day rule, scheme searches, prescribed info"
     },
     {
       "id": "assess",
-      "label": "Rules engine",
-      "detail": "Deterministic branch + toolset"
+      "label": "Action plan",
+      "detail": "Branch, deadlines, letter & negotiation loop"
     }
   ]
 }

@@ -18,6 +18,7 @@ export interface DemoTool {
   deadlineBasis: string;
   legalBasis?: string;
   priority: number;
+  documentTemplate?: string;
 }
 
 export interface DemoEscalation {
@@ -40,7 +41,36 @@ export interface DemoWorkflowStep {
   detail: string;
 }
 
+export interface DemoCaseMeta {
+  tenantName: string;
+  landlordName: string;
+  propertyAddress: string;
+  depositAmount: number;
+  depositFormatted: string;
+  problem: string;
+  playbookLabel: string;
+}
+
+export interface DemoBrand {
+  product: string;
+  title: string;
+  subtitle: string;
+}
+
+export interface DemoNegotiationRound {
+  label: string;
+  stage: string;
+  branchLabel: string;
+  escalation: DemoEscalation;
+  nextMove?: DemoNextMove;
+  userReport?: string;
+}
+
 export interface DemoAssessment {
+  brand: DemoBrand;
+  caseMeta: DemoCaseMeta;
+  letterTemplate: string;
+  negotiationRounds: DemoNegotiationRound[];
   domain: string;
   branch: string;
   branchLabel: string;
