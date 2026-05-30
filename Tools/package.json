@@ -1,0 +1,22 @@
+{
+  "name": "lawhive-workflow-demo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Remotion demo video of the document-driven legal toolset workflow",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts WorkflowDemo out/workflow-demo.mp4",
+    "still": "remotion still src/index.ts WorkflowDemo out/workflow-demo.png --frame=450"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.290",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "remotion": "^4.0.290"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.2",
+    "typescript": "^5.8.3"
+  }
+}

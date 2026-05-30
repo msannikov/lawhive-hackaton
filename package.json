@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "example": "node --experimental-strip-types examples/fromDocuments.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "demo:capture": "node --experimental-strip-types Tools/scripts/captureAssessment.ts",
+    "demo:studio": "npm run studio --prefix Tools",
+    "demo:render": "npm run render --prefix Tools"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
