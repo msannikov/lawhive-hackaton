@@ -112,9 +112,10 @@ app.post("/api/playbooks/deposit_return/letter", async (ctx) => {
 
 // ── Classify a pasted landlord reply (AI at the edge; heuristic offline) ─────
 app.post("/api/playbooks/:domain/classify-response", async (ctx) => {
+  const domain = ctx.req.param("domain");
   const body = await ctx.req.json().catch(() => ({}));
   const message = typeof body?.message === "string" ? body.message : "";
-  const result = await classifyLandlordResponse(message);
+  const result = await classifyLandlordResponse(message, domain);
   return ctx.json(result);
 });
 

@@ -1,22 +1,7 @@
 import { useState } from "react";
 import type { LandlordResponse, ClassifyResult } from "../types";
 import { classifyResponse } from "../api";
-
-const OPTIONS: { value: LandlordResponse; label: string }[] = [
-  { value: "agrees_in_full", label: "Agreed to return in full" },
-  { value: "disputes_deductions", label: "Wants deductions / disputes" },
-  { value: "unknown", label: "Unclear" },
-];
-
-function labelFor(v: LandlordResponse): string {
-  return v === "agrees_in_full"
-    ? "Agreed in full"
-    : v === "disputes_deductions"
-      ? "Disputes / deductions"
-      : v === "silent"
-        ? "No response"
-        : "Unclear";
-}
+import { negCopy } from "../lib/negCopy";
 
 interface Props {
   domain: string;
@@ -25,6 +10,15 @@ interface Props {
 }
 
 export default function ResponseLogger({ domain, onSubmit, onCancel }: Props) {
+  const c = negCopy(domain);
+  const options: { value: LandlordResponse; label: string }[] = [
+    { value: "agrees_in_full", label: "They've agreed to resolve it" },
+    { value: "disputes_deductions", label: c.disputeLabel },
+    { value: "unknown", label: "Unclear / not sure" },
+  ];
+  const labelFor = (v: LandlordResponse): string =>
+    options.find((o) => o.value === v)?.label ?? (v === "silent" ? "No response" : "Unclear");
+
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<ClassifyResult | null>(null);
@@ -48,12 +42,12 @@ export default function ResponseLogger({ domain, onSubmit, onCancel }: Props) {
 
   return (
     <div className="response-logger">
-      <label htmlFor="reply">Paste the landlord's reply — we'll read it and route you</label>
+      <label htmlFor="reply">Paste {c.counterparty}'s reply — we'll read it and route you</label>
       <textarea
         id="reply"
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder="e.g. I'll return your deposit minus £150 for cleaning…"
+        placeholder={c.replyPlaceholder}
       />
       <div className="rl-row">
         <button type="button" className="ghost-btn" disabled={busy || !text.trim()} onClick={classify}>
@@ -71,7 +65,7 @@ export default function ResponseLogger({ domain, onSubmit, onCancel }: Props) {
 
       <div className="rl-options">
         <span className="rl-or">{result ? "Confirm or change:" : "Or choose directly:"}</span>
-        {OPTIONS.map((o) => (
+        {options.map((o) => (
           <button
             key={o.value}
             type="button"

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { extractFacts } from "../api";
 import type { Facts, DocInput } from "../types";
+import { negCopy } from "../lib/negCopy";
 
 const MEDIA: Record<string, DocInput["mediaType"]> = {
   pdf: "application/pdf",
@@ -33,6 +34,7 @@ export default function DocUploadAccelerator({ domain, onExtracted }: Props) {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [count, setCount] = useState(0);
+  const copy = negCopy(domain);
 
   async function onFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
@@ -57,8 +59,7 @@ export default function DocUploadAccelerator({ domain, onExtracted }: Props) {
       <div className="uploader-text">
         <div className="uploader-title">Skip the typing — upload your paperwork</div>
         <div className="uploader-sub">
-          Drop your tenancy agreement, a bank statement showing the deposit, and your deposit-scheme
-          screenshots. Law Gun reads them and fills this in for you.
+          Drop {copy.uploadHint}. Law Gun reads them and fills this in for you.
         </div>
         {busy && <div className="uploader-msg busy">Reading your {count} document{count > 1 ? "s" : ""}…</div>}
         {msg && <div className="uploader-msg">{msg}</div>}
